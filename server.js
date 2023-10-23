@@ -67,16 +67,16 @@ app.get('/', (req, res) => {
 
 app.get('/test', (req, res) => {
   mongoose.connect(process.env.MONGO_URL)
-  .then(async () => {
-    const database = client.db("userInfo");
-    const skills = await database.collection('skills').insertOne({ skill: 'test 1'});
-    console.log("Added to MongoDB!", skills);
-  })
-  .catch(() => {
-    console.log("Couldn't connect to MongoDB");
-  })
-  
-  })
+    .then(async () => {
+      const database = client.db("userInfo");
+      const skills = await database.collection('skills').insertOne({ skill: 'test 1' });
+      console.log("Added to MongoDB!", skills);
+    })
+    .catch(() => {
+      console.log("Couldn't connect to MongoDB");
+    })
+
+})
 
 app.use((req, res) => {
   res.status(404).sendFile('./views/404.html', { root: __dirname})
