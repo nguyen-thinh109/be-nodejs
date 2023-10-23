@@ -20,23 +20,29 @@
         <div class="achievements">
             <div class="work">
                 <i class="fas fa-atom"></i>
-                <p class="work-heading">Projects</p>
+                <h3 class="work-heading">Projects</h3>
                 <p class="work-text">I have worked on many projects and I am very proud of them. I am a very good developer and I am always looking for new projects.</p>
             </div>
             <div class="work">
                 <i class="fas fa-skiing"></i>
-                <p class="work-heading">Skills</p>
+                <h3 class="work-heading">Skills</h3>
                 <p class="work-text">I have a lot of skills and I am very good at them. I am very good at programming and I am always looking for new skills.</p>
+
+                <ul>
+                    <% for (let item of skills)  {%>
+                        <li><%=item.skill%></li>
+                    <% } %>
+                </ul>
             </div>
             <div class="work">
                 <i class="fas fa-ethernet"></i>
-                <p class="work-heading">Network</p>
+                <h3 class="work-heading">Network</h3>
                 <p class="work-text">I have a lot of network skills and I am very good at them. I am very good at networking and I am always looking for new network skills.</p>
             </div>
         </div>
         <div class="about-me">
             <div class="about-me-text">
-                <h2>About Me</h2>
+                <h3>About Me</h3>
                 <p>I am a web developer and I love to create websites. I am a very good developer and I am always looking for new projects. I am a very good developer and I am always looking for new
                     projects.</p>
             </div>
