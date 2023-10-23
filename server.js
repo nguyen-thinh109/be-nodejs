@@ -4,12 +4,35 @@ const app = express();
 const port = process.env.port;
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+// const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const dbURI = 'mongodb+srv://tnguyen01:tnguyen01@nodejsbe.crgpri3.mongodb.net/userInfo.user?retryWrites=true&w=majority';
-mongoose
-  .connect("dbURI", { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((res) => console.log('connected to db', res))
-  .catch((error) => console.log(error));
+// const client = new MongoClient(process.env.MONGO_URL, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
+
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);
+
+mongoose.connect(process.env.MONGO_URL)
+  .then((res) => console.log('connected to db'))
+  .catch(() => {
+    console.log("Couldn't connect to MongoDB");
+  })
 
 app.use(morgan('dev'));
 app.use(express.static('public'));
