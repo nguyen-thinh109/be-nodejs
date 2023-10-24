@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABCDEF</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+    <main>
+        <h1 class="title">List</h1>
+
+        <h2 class="sub-title">Completed</h2>
+
+        <ul class="list">
+            <% for (let item of tasks) {%>
+                <li>
+                    <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" checked="true">
+                    <%= item.task %>
+                </li>
+            <% } %>
+        </ul>
+
+    </main>
+
+   <a class="link" href="/">See pending</a>
+</body>
+</html>
