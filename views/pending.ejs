@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABCDEF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body>
+    <main>
+      <h1 class="text-center mb-4 text-xl font-bold">List</h1>
+
+      <h2 class="mb-4 text-lg">Pending</h2>
+      <% if (tasks.length) { %>
+      <ul class="list">
+        <% for (let item of tasks) { %>
+        <li class="text-sm mb-2">
+          <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" class="mr-2" onchange="handleChange(event, '<%= item._id %>')"/>
+          <%= item.task %>
+        </li>
+        <% } %>
+      </ul>
+      <% } else { %>
+      <p class="text-center text-sm italic mb-4">Không có dữ liệu</p>
+      <% } %>
+
+      <div class="flex justify-between items-center my-8">
+        <a class="" href="/add-task">
+          <button id="add" class="px-2 py-1 text-white bg-green-600 text-sm italic rounded-md">Add new</button>
+        </a>
+
+        <a class="text-white italic text-sm" href="/completed">See completed</a>
+      </div>
+    </main>
+
+    <script>
+        function handleChange(event, id) {
+            console.log(event, id)
+            if (event.target.checked) {
+                fetch(`/pending/${id}`, { method: 'DELETE'}).then( (res) => {
+                    console.log('handleChange', res)
+                })
+            }
+        }
+    </script>
+  </body>
+</html>

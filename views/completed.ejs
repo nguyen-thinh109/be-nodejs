@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ABCDEF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/style.css" />
-</head>
-<body>
+  </head>
+
+  <body>
     <main>
-        <h1 class="title">List</h1>
+        <h1 class="text-center mb-4 text-xl font-bold">List</h1>
 
-        <h2 class="sub-title">Completed</h2>
+        <h2 class="mb-4 text-lg">Completed</h2>
 
-        <ul class="list">
-            <% for (let item of tasks) {%>
-                <li>
-                    <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" checked="true">
-                    <%= item.task %>
-                </li>
-            <% } %>
-        </ul>
-
+      <% if (tasks.length) { %>
+      <ul class="list mb-4">
+        <% for (let item of tasks) { %>
+        <li class="text-sm mb-2">
+          <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>"  class="mr-2" />
+          <%= item.task %>
+        </li>
+        <% } %>
+      </ul>
+      <% } else { %>
+      <p class="text-center text-sm italic mb-4">Không có dữ liệu</p>
+      <% } %>
     </main>
 
-   <a class="link" href="/">See pending</a>
-</body>
+    <a class="text-white italic text-sm my-4 mr-0 ml-auto" href="/">See pending</a>
+  </body>
 </html>

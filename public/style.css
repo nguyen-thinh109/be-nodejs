@@ -1,48 +1,11 @@
+
 * {
   padding: 0;
   margin: 0;
 }
 
 body {
-  margin: 16px;
+  margin: 16px !important;
   background: black;
-}
-
-main {
   color: white;
-}
-
-.title {
-  padding: 16px 0;
-  text-align: center;
-}
-
-.sub-title {
-  margin-bottom: 16px;
-}
-
-.list > li > input[type='checkbox'] {
-  margin-right: 4px;
-}
-
-.list > li {
-  margin-bottom: 8px;
-  list-style-type: none;
-}
-
-button {
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin: 16px 16px 0 0;
-  outline: none;
-  border: none;
-  background-color: #8282ff;
-  color: white;
-}
-
-link {
-  display: block;
-  font-style: italic;
-  color: white;
-  margin-right: 0;
 }
