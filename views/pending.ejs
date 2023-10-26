@@ -69,9 +69,10 @@
             .then((res) => {
               console.log(res);
               if (res.reload) {
-                window.location.reload(true)
+                window.location.reload()
               }
-            }).catch((err) => console.log(err))
+            })
+            .catch((err) => console.log(err))
 }
     </script>
   </body>
