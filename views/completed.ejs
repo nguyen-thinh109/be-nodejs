@@ -15,7 +15,7 @@
   <main>
     <h1 class="text-center mb-4 text-xl font-bold">List</h1>
 
-    <h2 class="mb-4 text-lg">Completed</h2>
+    <h2 class="mb-4 text-lg font-semibold underline">Completed</h2>
 
     <% if (tasks.length) { %>
       <ul class="list mb-4">
@@ -35,8 +35,7 @@
         <p class="text-center text-sm italic mb-4">Không có dữ liệu</p>
         <% } %>
   </main>
-
-  <a class="text-end italic text-sm my-4" href="/">See pending</a>
+  <div class="flex justify-end"><a class="text-end italic text-sm my-4" href="/">See pending</a></div>  
 
   <script>
     function handleSelectionChange(event, taskObj) {
