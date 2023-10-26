@@ -8,6 +8,6 @@ const completeSchema = new Schema({
     }
 }, { timestamps: true });
 
-const Complete = mongoose.model('complete', completeSchema);
+const Completed = mongoose.model('complete', completeSchema);
 
-module.exports = Complete;
+module.exports = Completed;

@@ -4,8 +4,7 @@ const app = express();
 const port = process.env.port;
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-const Pending = require("./models/pending");
-const Complete = require("./models/complete");
+const routes = require("./routes/routes")
 
 //Middlewares & static files
 app.use(morgan("dev"));
@@ -28,55 +27,11 @@ mongoose
     console.log("Couldn't connect to MongoDB", err);
   });
 
-//Pending tasks
-app.get("/", (req, res) => {
-  res.redirect("/pending");
-});
-
-app.get("/pending", (req, res) => {
-  Pending.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render("pending", { tasks: result });
-    });
-});
-
-//Add new task
-app.post("/pending", (req, res) => {
-  const pending = new Pending(req.body);
-
-  pending
-    .save()
-    .then((result) => {
-      res.redirect('/pending')
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-app.get("/add-task", (req, res) => {
-  res.render("add-task");
-});
-
-//Move to completed tasks
-
-app.delete("/pending/:id", (req, res) => {
-  const id = req.params.id;
-  const task = req.body.body;
-  console.log(id, task)
-});
-
-//Completed tasks
-app.get("/completed", (req, res) => {
-  Complete.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render("completed", { tasks: result });
-    });
-});
+//Blog routes
+app.use(routes);
 
 //404
 app.use((req, res) => {
   res.status(404).sendFile("./views/404.html", { root: __dirname });
 });
+

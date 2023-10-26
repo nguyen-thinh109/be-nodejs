@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ABCDEF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/style.css" />
   </head>
@@ -17,8 +18,16 @@
       <ul class="list">
         <% for (let item of tasks) { %>
         <li class="text-sm mb-2">
-          <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" class="mr-2" onchange="handleChange(event, '<%= item._id %>')"/>
-          <%= item.task %>
+          <div class="flex items-center border-b border-solid border-gray-200 pb-2">
+            <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" class="mr-2 block" onchange="handleSelectionChange(event, '<%= item %>')" />
+            <span class="block flex-1">
+              <%= item.task %>
+            </span>
+            <div class="">
+              <div class="w-6 h-6 grid place-items-center mr-2" onclick="handleModification('<%= item._id %>')"><i class="fa-regular fa-pen-to-square"></i></div>
+              <div class="w-6 h-6 grid place-items-center" onclick="handleDeletion('<%= item._id %>')"><i class="fa-regular fa-trash-can"></i></div>
+            </div>
+          </div>
         </li>
         <% } %>
       </ul>
@@ -31,19 +40,39 @@
           <button id="add" class="px-2 py-1 text-white bg-green-600 text-sm italic rounded-md">Add new</button>
         </a>
 
-        <a class="text-white italic text-sm" href="/completed">See completed</a>
+        <a class="italic text-sm" href="/completed">See completed</a>
       </div>
     </main>
 
     <script>
-        function handleChange(event, id) {
-            console.log(event, id)
+        function handleSelectionChange(event, taskObj) {
+            console.log('selected', event.target.checked, taskObj)
+            const requestBody = JSON.stringify({task: taskObj.task});
             if (event.target.checked) {
-                fetch(`/pending/${id}`, { method: 'DELETE'}).then( (res) => {
-                    console.log('handleChange', res)
-                })
+                fetch('/completed', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" },}).then( (res) => {
+                    console.log('handleChange', res);
+                    handleDeletion(taskObj._id);
+                }).catch((err) => console.log(err))
             }
         }
+
+        function handleModification(id) {
+          console.log('modify', id);
+          // fetch(`/pending/${id}`, { method: 'PATCH'}).then( (res) => {
+          //           console.log('handleChange', res)
+          //       })
+        }
+        
+        function handleDeletion(id) {
+          console.log('delete', id);
+          fetch(`/pending/${id}`, { method: 'DELETE' })
+            .then((res) => {
+              console.log(res);
+              if (res.reload) {
+                window.location.reload(true)
+              }
+            }).catch((err) => console.log(err))
+}
     </script>
   </body>
 </html>
