@@ -4,7 +4,7 @@ const router = express.Router();
 const Pending = require("../models/pending");
 const Completed = require("../models/completed");
 
-//Pending tasks
+//Display pending tasks
 router.get("/", (req, res) => {
     res.redirect("/pending");
 });
@@ -24,7 +24,8 @@ router.post("/pending", (req, res) => {
     pending
         .save()
         .then((result) => {
-            res.redirect('/pending')
+            res.json({success : true});
+            res.redirect('/pending');
         })
         .catch((err) => {
             console.log(err);
@@ -40,16 +41,14 @@ router.delete("/pending/:id", (req, res) => {
     const id = req.params.id;
     console.log('delete', id)
 
-    Pending.findByIdAndDelete(id).then((result) => {
-        console.log('delete successful', id);
-        //reload
-        res.json({ reload: true }).redirect(301, 'pending');
-    }).catch((err) => {
-        console.log(err);
-    });
+    Pending.findByIdAndDelete(id)
+        .then((result) => {
+            res.json({success : true})
+        })
+        .catch((err) => console.log(err))
 });
 
-//Completed tasks
+//Display completed tasks
 router.get("/completed", (req, res) => {
     Completed.find()
         .sort({ createdAt: -1 })
@@ -66,7 +65,8 @@ router.post("/completed", (req, res) => {
     complete
         .save()
         .then((result) => {
-            console.log(result)
+            console.log(result);
+            res.json({success : true});
         })
         .catch((err) => {
             console.log(err);
@@ -81,6 +81,7 @@ router.delete("/completed/:id", (req, res) => {
     Completed.findByIdAndDelete(id).then((result) => {
         console.log('delete successful', id);
         //redirect
+        res.json({success : true});
     }).catch((err) => {
         console.log(err);
     });

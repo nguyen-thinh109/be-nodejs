@@ -19,7 +19,7 @@
         <% for (let item of tasks) { %>
         <li class="text-sm mb-2">
           <div class="flex items-center border-b border-solid border-gray-200 pb-2">
-            <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" class="mr-2 block" onchange="handleSelectionChange(event, '<%= item %>')" />
+            <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" class="mr-2 block" onchange="handleSelectionChange(event, '<%= item._id %>', '<%= item.task %>')" />
             <span class="block flex-1">
               <%= item.task %>
             </span>
@@ -45,14 +45,19 @@
     </main>
 
     <script>
-        function handleSelectionChange(event, taskObj) {
-            console.log('selected', event.target.checked, taskObj)
-            const requestBody = JSON.stringify({task: taskObj.task});
+        function handleSelectionChange(event, id, task) {
+            console.log('selected', event.target.checked, id, task)
+            const requestBody = JSON.stringify({ task: task });
             if (event.target.checked) {
-                fetch('/completed', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" },}).then( (res) => {
-                    console.log('handleChange', res);
-                    handleDeletion(taskObj._id);
-                }).catch((err) => console.log(err))
+                fetch('/completed', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" } })
+                .then(res => res.json())
+                .then((data) => {
+                    console.log('handleChange', data);
+                    if (data?.success) {
+                      handleDeletion(id);
+                    }                    
+                  })
+                .catch((err) => console.log(err))
             }
         }
 
@@ -66,9 +71,10 @@
         function handleDeletion(id) {
           console.log('delete', id);
           fetch(`/pending/${id}`, { method: 'DELETE' })
-            .then((res) => {
-              console.log(res);
-              if (res.reload) {
+            .then(res => res.json())
+            .then((data) => {
+              console.log(data)
+              if (data?.success) {
                 window.location.reload()
               }
             })
