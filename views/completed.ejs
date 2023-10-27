@@ -35,13 +35,26 @@
         <p class="text-center text-sm italic mb-4">Không có dữ liệu</p>
         <% } %>
   </main>
-  <div class="flex justify-end"><a class="text-end italic text-sm my-4" href="/">See pending</a></div>  
+
+  <div class="flex justify-end"><a class="text-end italic text-sm my-4" href="/">See pending</a></div>
+
+  <div class="hidden loading w-full h-full opacity-50 bg-gray-900 absolute z-50 top-0 left-0 grid place-items-center">
+    <span class="flex h-5 w-5 relative animate-bounce">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-500"></span>
+    </span>
+  </div>
 
   <script>
+    const loading = document.querySelector('.loading');
+
     function handleSelectionChange(event, id, task) {
       console.log('unselected', event.target.checked, id, task)
       const requestBody = JSON.stringify({ task: task });
+
       if (!event.target.checked) {
+        loading.classList.remove('hidden');
+
         fetch('/pending', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" } })
           .then(res => res.json())
           .then((data) => {
@@ -55,6 +68,7 @@
     }
 
     function handleDeletion(id) {
+      loading.classList.remove('hidden');
       fetch(`/completed/${id}`, { method: 'DELETE' })
       .then(res => res.json())
       .then((data) => {

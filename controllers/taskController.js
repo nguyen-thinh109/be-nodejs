@@ -19,12 +19,16 @@ const showPendingTasks = (req, res) => {
 
 const addPendingTask = (req, res) => {
   const pending = new Pending(req.body);
-
+  const isSameUrl = req.url == "/pending";
+  console.log(req.url)
   pending
     .save()
     .then((result) => {
-      res.json({ success: true });
-      res.redirect("/pending");
+      if (isSameUrl) {
+        res.json({ success: true });
+      } else {
+        res.redirect("/pending");
+      }
     })
     .catch((err) => {
       console.log(err);

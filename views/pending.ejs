@@ -44,22 +44,32 @@
       </div>
     </main>
 
-    <div class="w-full h-full bg-gray-900 z-50 top-0 left-0"></div>
+    <div class="hidden loading w-full h-full opacity-50 bg-gray-900 absolute z-50 top-0 left-0 grid place-items-center">
+      <span class="flex h-5 w-5 relative animate-bounce">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-500"></span>
+      </span>
+    </div>
 
-    <script>
+    <script>      
+        const loading = document.querySelector('.loading');
+
         function handleSelectionChange(event, id, task) {
-            console.log('selected', event.target.checked, id, task)
+            console.log('selected', event.target.checked, id, task);
             const requestBody = JSON.stringify({ task: task });
+
             if (event.target.checked) {
-                fetch('/completed', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" } })
-                .then(res => res.json())
-                .then((data) => {
-                    console.log('handleChange', data);
-                    if (data?.success) {
-                      handleDeletion(id);
-                    }                    
-                  })
-                .catch((err) => console.log(err))
+              loading.classList.remove('hidden');
+
+              fetch('/completed', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" } })
+              .then(res => res.json())
+              .then((data) => {
+                  console.log('handleChange', data);
+                  if (data?.success) {
+                    handleDeletion(id);
+                  }                    
+                })
+              .catch((err) => console.log(err))
             }
         }
 
@@ -72,6 +82,7 @@
         
         function handleDeletion(id) {
           console.log('delete', id);
+          loading.classList.remove('hidden');
           fetch(`/pending/${id}`, { method: 'DELETE' })
             .then(res => res.json())
             .then((data) => {
