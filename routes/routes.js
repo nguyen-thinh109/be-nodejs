@@ -1,90 +1,27 @@
 const express = require('express');
 const router = express.Router();
-
-const Pending = require("../models/pending");
-const Completed = require("../models/completed");
+const taskController = require('../controllers/taskController');
 
 //Display pending tasks
-router.get("/", (req, res) => {
-    res.redirect("/pending");
-});
+router.get("/", taskController.redirectToPending);
 
-router.get("/pending", (req, res) => {
-    Pending.find()
-        .sort({ createdAt: -1 })
-        .then((result) => {
-            res.render("pending", { tasks: result });
-        });
-});
+router.get("/pending", taskController.showPendingTasks);
 
 //Add new task
-router.post("/pending", (req, res) => {
-    const pending = new Pending(req.body);
+router.post("/pending", taskController.addPendingTask);
 
-    pending
-        .save()
-        .then((result) => {
-            res.json({success : true});
-            res.redirect('/pending');
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-
-router.get("/add-task", (req, res) => {
-    res.render("add-task");
-});
+router.get("/add-task", taskController.showAddTaskForm);
 
 //Delete pending tasks
-router.delete("/pending/:id", (req, res) => {
-    const id = req.params.id;
-    console.log('delete', id)
-
-    Pending.findByIdAndDelete(id)
-        .then((result) => {
-            res.json({success : true})
-        })
-        .catch((err) => console.log(err))
-});
+router.delete("/pending/:id", taskController.deletePendingTask);
 
 //Display completed tasks
-router.get("/completed", (req, res) => {
-    Completed.find()
-        .sort({ createdAt: -1 })
-        .then((result) => {
-            res.render("completed", { tasks: result });
-        });
-});
+router.get("/completed", taskController.showCompletedTasks);
 
 //Add new completed task
-router.post("/completed", (req, res) => {
-    console.log(req.body);
-    const complete = new Completed(req.body);
-
-    complete
-        .save()
-        .then((result) => {
-            console.log(result);
-            res.json({success : true});
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
+router.post("/completed", taskController.addCompletedTasks);
 
 //Delete completed tasks
-router.delete("/completed/:id", (req, res) => {
-    const id = req.params.id;
-    console.log('delete completed', id)
-
-    Completed.findByIdAndDelete(id).then((result) => {
-        console.log('delete successful', id);
-        //redirect
-        res.json({success : true});
-    }).catch((err) => {
-        console.log(err);
-    });
-});
+router.delete("/completed/:id", taskController.deleteCompletedTask);
 
 module.exports = router
