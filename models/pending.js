@@ -5,7 +5,11 @@ const pendingSchema = new Schema({
     task: {
         type: String,
         require: true
-    }
+    },
+    action: {
+        type: String,
+        require: true
+    },
 }, { timestamps: true });
 
 const Pending = mongoose.model('pending', pendingSchema);

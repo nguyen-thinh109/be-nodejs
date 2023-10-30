@@ -7,13 +7,15 @@
   <title>Completed tasks!!!</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <link rel="stylesheet" href="/style.css" />
 </head>
 
 <body>
   <main>
-    <h1 class="text-center mb-4 text-xl font-bold">List</h1>
+    <div class="relative mb-4">
+      <h1 class="text-center text-xl font-bold">List</h1>
+      <div class="absolute top-0 right-0 transform translate-middle w-6 h-6 grid place-items-center" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+    </div>    
 
     <h2 class="mb-4 text-lg font-semibold underline">Completed</h2>
 
@@ -38,19 +40,15 @@
 
   <div class="flex justify-end"><a class="text-end italic text-sm my-4" href="/">See pending</a></div>
 
-  <div class="hidden loading w-full h-full opacity-50 bg-gray-900 absolute z-50 top-0 left-0 grid place-items-center">
-    <span class="flex h-5 w-5 relative animate-bounce">
-      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-      <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-500"></span>
-    </span>
-  </div>
+  <!-- Loading -->
+  <%- include('./comp/loading') %>
 
   <script>
     const loading = document.querySelector('.loading');
 
     function handleSelectionChange(event, id, task) {
       console.log('unselected', event.target.checked, id, task)
-      const requestBody = JSON.stringify({ task: task });
+      const requestBody = JSON.stringify({ task: task, action: 'UNSELECT'});
 
       if (!event.target.checked) {
         loading.classList.remove('hidden');
@@ -77,6 +75,17 @@
           window.location.reload()
         }
       }).catch((err) => console.log(err))
+    }
+
+    function signOut() {
+      console.log('signOut');
+      localStorage.removeItem('todoAuthToken');
+
+      // fetch("/sign-out/", { method: 'POST' })
+      // .then(res => res.json())
+      // .then((data) => {
+      //   console.log(data);
+      // }).catch((err) => console.log(err))
     }
   </script>
 </body>

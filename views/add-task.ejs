@@ -4,24 +4,42 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ABCDEF - Add task</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Add task</title>
     <link rel="stylesheet" href="/style.css" />
 </head>
 
 <body>
     <main>
         <h1 class="text-center mb-4 text-xl font-bold">Add task</h1>
-        <form action="/pending" method="post">
+        <div class="w-full">
             <textarea name="task" id="add-task" cols="30" rows="5" class="w-full text-black p-2 border border-gray-200 focus:outline-none focus:ring focus:border-blue-300 rounded" required></textarea>
 
             <div class="flex justify-between items-center my-8">
-                <button type="submit" id="add" class="px-2 py-1 text-white bg-green-600 text-sm italic rounded-md">Add new</button>
+                <button type="submit" id="add" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="addNewTask()">Add new</button>
                 <a class="italic text-sm" href="/pending">See pending</a>
                 <a class="italic text-sm" href="/completed">See completed</a>
             </div>
-        </form>
+        </div>
     </main>
+
+    <script>
+        const task = document.querySelector('#add-task');
+
+        function addNewTask() {
+            console.log('addNewTask', task.value)
+            const requestBody = JSON.stringify({ task: task.value, action: 'ADD' });
+
+            fetch('/pending', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" }})
+                .then(res => res.json())
+                .then((data) => {
+                    if (data?.success && data?.isRedirectRequired) {
+                        console.log('success');
+                        window.location.href = '/pending';
+                    }
+                })
+                .catch((err) => console.log(err))
+        }
+    </script>
 </body>
 
 </html>

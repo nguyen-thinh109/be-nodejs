@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+    <main>
+        <h1 class="text-center mb-4 text-xl font-bold">Sign in</h1>
+        <form action="/sign-in" method="post">
+            <label for="username" class="mb-3">
+                <input type="text" name="username" id="username" class="w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+            </label>
+            <label for="password" class="mb-3">
+                <input type="password" name="password" id="password" class="w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+            </label>
+
+            <div class="flex justify-evenly items-center my-8">
+                <button type="submit" id="add" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md">Sign-in</button>
+                <button type="submit" id="add" class="px-3 py-2 text-sm italic rounded-md">Forget pasword</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

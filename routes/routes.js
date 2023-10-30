@@ -1,10 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const taskController = require('../controllers/taskController');
+const signInController = require('../controllers/signInController');
+const signOutController = require('../controllers/signOutController');
+
+
+router.get("/", signInController.redirect);
+
+//Display sign-in
+router.get("/sign-in", signInController.showSignInPage);
 
 //Display pending tasks
-router.get("/", taskController.redirectToPending);
-
 router.get("/pending", taskController.showPendingTasks);
 
 //Add new task
@@ -23,5 +29,8 @@ router.post("/completed", taskController.addCompletedTasks);
 
 //Delete completed tasks
 router.delete("/completed/:id", taskController.deleteCompletedTask);
+
+//Sign-out
+router.post("/sign-out", signOutController.signOut);
 
 module.exports = router

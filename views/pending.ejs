@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pending tasks!!!</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <link rel="stylesheet" href="/style.css" />
   </head>
 
   <body class="relative">
     <main>
-      <h1 class="text-center mb-4 text-xl font-bold">List</h1>
+      <div class="relative mb-4">
+        <h1 class="text-center text-xl font-bold">List</h1>
+        <div class="absolute top-0 right-0 transform translate-middle w-6 h-6 grid place-items-center" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+      </div>
 
       <h2 class="mb-4 text-lg font-semibold underline">Pending</h2>
       <% if (tasks.length) { %>
@@ -37,22 +39,25 @@
 
       <div class="flex justify-between items-center my-8">
         <a class="" href="/add-task">
-          <button id="add" class="px-2 py-1 text-white bg-green-600 text-sm italic rounded-md">Add new</button>
+          <button id="add" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md">Add new</button>
         </a>
 
         <a class="italic text-sm" href="/completed">See completed</a>
       </div>
     </main>
 
-    <div class="hidden loading w-full h-full opacity-50 bg-gray-900 absolute z-50 top-0 left-0 grid place-items-center">
-      <span class="flex h-5 w-5 relative animate-bounce">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-500"></span>
-      </span>
-    </div>
+    <!-- Loanding -->
+    <%- include('./comp/loading') %>
+
+    <!-- Result pop-up -->
+    <%- include('./comp/success-popup') %>
+    <%- include('./comp/fail-popup') %>
 
     <script>      
         const loading = document.querySelector('.loading');
+        const successPopup = document.querySelector('.success');
+        const failPopup = document.querySelector('.fail');
+        let timer;
 
         function handleSelectionChange(event, id, task) {
             console.log('selected', event.target.checked, id, task);
@@ -83,16 +88,33 @@
         function handleDeletion(id) {
           console.log('delete', id);
           loading.classList.remove('hidden');
+          clearTimeout(timer);
+
           fetch(`/pending/${id}`, { method: 'DELETE' })
             .then(res => res.json())
             .then((data) => {
               console.log(data)
               if (data?.success) {
-                window.location.reload()
+                successPopup.classList.remove('hidden');
+
+                timer = setTimeout(() => {
+                  window.location.reload();
+                }, 1500)
               }
             })
             .catch((err) => console.log(err))
-}
+        }
+
+        function signOut() {
+          console.log('signOut');
+          localStorage.removeItem('todoAuthToken');
+
+          // fetch("/sign-out/", { method: 'POST' })
+          // .then(res => res.json())
+          // .then((data) => {
+          //   console.log(data);
+          // }).catch((err) => console.log(err))
+        }
     </script>
   </body>
 </html>

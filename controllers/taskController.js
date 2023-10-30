@@ -1,10 +1,6 @@
 const Pending = require("../models/pending");
 const Completed = require("../models/completed");
 
-const redirectToPending = (req, res) => {
-  res.redirect("/pending");
-};
-
 const showAddTaskForm = (req, res) => {
   res.render("add-task");
 };
@@ -19,15 +15,16 @@ const showPendingTasks = (req, res) => {
 
 const addPendingTask = (req, res) => {
   const pending = new Pending(req.body);
-  const isSameUrl = req.url == "/pending";
-  console.log(req.url)
+  const isUndoCompleted = req?.action == "UNSELECT";
+  console.log(req.body)
+  
   pending
     .save()
     .then((result) => {
-      if (isSameUrl) {
-        res.json({ success: true });
+      if (isUndoCompleted) {
+        res.json({ success: true, isRedirectRequired: false });
       } else {
-        res.redirect("/pending");
+        res.json({ success: true, isRedirectRequired: true });
       }
     })
     .catch((err) => {
@@ -83,7 +80,6 @@ const deleteCompletedTask = (req, res) => {
 };
 
 module.exports = {
-  redirectToPending,
   showAddTaskForm,
   showPendingTasks,
   addPendingTask,
