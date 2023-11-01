@@ -1,11 +1,14 @@
 const express = require("express");
-require("dotenv").config();
+const dotenv = require('dotenv'); 
 const app = express();
 const port = process.env.port;
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-const routes = require("./routes/routes")
+const routes = require("./routes/routes");
+const jwt = require('jsonwebtoken');
 
+// Set up Global configuration access 
+dotenv.config();
 //Middlewares & static files
 app.use(morgan("dev"));
 app.use(express.static("public"));
