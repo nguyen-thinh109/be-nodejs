@@ -43,8 +43,15 @@
   <!-- Loading -->
   <%- include('./comp/loading') %>
 
+  <!-- Result pop-up -->
+  <%- include('./comp/success-popup') %>
+  <%- include('./comp/fail-popup') %>
+
   <script>
     const loading = document.querySelector('.loading');
+    const successPopup = document.querySelector('.success');
+    const failPopup = document.querySelector('.fail');
+    let timer;
 
     function handleSelectionChange(event, id, task) {
       console.log('unselected', event.target.checked, id, task)
@@ -67,12 +74,18 @@
 
     function handleDeletion(id) {
       loading.classList.remove('hidden');
+      clearTimeout(timer);
+
       fetch(`/completed/${id}`, { method: 'DELETE' })
       .then(res => res.json())
       .then((data) => {
         console.log(data);
         if (data?.success) {
-          window.location.reload()
+          successPopup.classList.remove('hidden');
+
+          timer = setTimeout(() => {
+             window.location.reload();
+          }, 1500)
         }
       }).catch((err) => console.log(err))
     }

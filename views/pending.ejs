@@ -26,7 +26,7 @@
               <%= item.task %>
             </span>
             <div class="">
-              <div class="w-6 h-6 grid place-items-center mr-2" onclick="handleModification('<%= item._id %>')"><i class="fa-regular fa-pen-to-square"></i></div>
+              <div class="w-6 h-6 grid place-items-center mr-2" onclick="handleEditTask('<%= item._id %>', '<%= item.task %>')"><i class="fa-regular fa-pen-to-square"></i></div>
               <div class="w-6 h-6 grid place-items-center" onclick="handleDeletion('<%= item._id %>')"><i class="fa-regular fa-trash-can"></i></div>
             </div>
           </div>
@@ -38,25 +38,46 @@
       <% } %>
 
       <div class="flex justify-between items-center my-8">
-        <a class="" href="/add-task">
-          <button id="add" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md">Add new</button>
-        </a>
-
+        <button id="add" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="handleAddTask()">Add new</button>
         <a class="italic text-sm" href="/completed">See completed</a>
       </div>
     </main>
 
-    <!-- Loanding -->
+    <!-- Loading -->
     <%- include('./comp/loading') %>
 
     <!-- Result pop-up -->
     <%- include('./comp/success-popup') %>
     <%- include('./comp/fail-popup') %>
 
+    <!-- Add/Edit task pop-up -->
+    <div id="pop-up" class="p-4 h-full w-full absolute z-30 top-0 left-0 bg-white hidden">
+      <h1 class="text-center mb-4 text-xl font-bold title-taskPopup"></h1>
+      <div class="w-full">
+          <textarea name="task" id="edit-task-input" cols="30" rows="5" class="w-full text-black p-2 border border-gray-200 focus:outline-none focus:ring focus:border-blue-300 rounded" required></textarea>
+          <textarea name="task" id="add-task-input" cols="30" rows="5" class="w-full text-black p-2 border border-gray-200 focus:outline-none focus:ring focus:border-blue-300 rounded" required></textarea>
+
+          <div class="flex justify-between items-center my-8">
+              <button type="submit" id="add-btn" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="addNewTask()">Add new</button>
+              <button type="submit" id="edit-btn" class="px-3 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="confirmEditTask()">Update</button>
+              <span class="italic text-sm" onclick="hideTaskPopup()">See pending</span>
+              <a class="italic text-sm" href="/completed">See completed</a>
+          </div>
+      </div>
+    </div>
+
     <script>      
         const loading = document.querySelector('.loading');
         const successPopup = document.querySelector('.success');
         const failPopup = document.querySelector('.fail');
+        const taskPopup = document.querySelector('#pop-up');
+        const addTaskInput = document.querySelector('#add-task-input');
+        const editTaskInput = document.querySelector('#edit-task-input');
+        const addTaskBtn = document.querySelector('#add-btn');
+        const editTaskBtn = document.querySelector('#edit-btn');
+        const titlePopup = document.querySelector('.title-taskPopup');
+
+        let currentEditingTaskId = '';
         let timer;
 
         function handleSelectionChange(event, id, task) {
@@ -78,11 +99,72 @@
             }
         }
 
-        function handleModification(id) {
-          console.log('modify', id);
-          // fetch(`/pending/${id}`, { method: 'PATCH'}).then( (res) => {
-          //           console.log('handleChange', res)
-          //       })
+        function handleAddTask() {
+          titlePopup.innerText = 'Add Task';
+          taskPopup.classList.remove('hidden');
+
+          editTaskBtn.classList.add('hidden');
+          editTaskInput.classList.add('hidden');
+        }
+
+        function addNewTask() {          
+          console.log('addNewTask');          
+          const newTaskContent = addTaskInput.value;
+          const requestBody = JSON.stringify({ task: newTaskContent, action: 'ADD' });
+
+          taskPopup.classList.add('hidden');
+          loading.classList.remove('hidden');
+          clearTimeout(timer);
+          
+          fetch('/pending', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" }})
+              .then(res => res.json())
+              .then((data) => {
+                  if (data?.success) {
+                    successPopup.classList.remove('hidden');
+
+                    timer = setTimeout(() => {
+                      window.location.reload();
+                    }, 1500)
+                  }
+              })
+              .catch((err) => console.log(err))
+        }
+
+        function handleEditTask(taskId, taskContent) {
+          titlePopup.innerText = 'Edit Task';
+          taskPopup.classList.remove('hidden');
+
+          addTaskBtn.classList.add('hidden');
+          addTaskInput.classList.add('hidden');
+
+          editTaskInput.value = taskContent;
+          currentEditingTaskId = taskId;
+        }
+
+        function confirmEditTask() {
+          let editedContent = editTaskInput.value;
+          let requestBody = JSON.stringify({task: editedContent});
+          
+          taskPopup.classList.add('hidden');
+          loading.classList.remove('hidden');
+
+          fetch(`/pending/${currentEditingTaskId}`, { method: 'PUT', body: requestBody, headers: { "Content-Type": "application/json" }})
+            .then(res => res.json())
+            .then((data) => {
+              console.log(data)
+              if (data?.success) {
+                successPopup.classList.remove('hidden');
+
+                timer = setTimeout(() => {
+                  window.location.reload();
+                }, 1500)
+              }
+            })
+            .catch((err) => console.log(err))
+        }
+
+        function hideTaskPopup() {
+          taskPopup.classList.add('hidden');
         }
         
         function handleDeletion(id) {

@@ -16,10 +16,11 @@ router.get("/pending", taskController.showPendingTasks);
 //Add new task
 router.post("/pending", taskController.addPendingTask);
 
-router.get("/add-task", taskController.showAddTaskForm);
-
 //Delete pending tasks
 router.delete("/pending/:id", taskController.deletePendingTask);
+
+//Update a pending task
+router.put("/pending/:id", taskController.updateOnePendingTask);
 
 //Display completed tasks
 router.get("/completed", taskController.showCompletedTasks);

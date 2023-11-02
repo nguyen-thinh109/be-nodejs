@@ -1,8 +1,8 @@
 const Pending = require("../models/pending");
 const Completed = require("../models/completed");
 
-const showAddTaskForm = (req, res) => {
-  res.render("add-task");
+const redirectToPending = (req, res) => {
+  res.redirect("/pending");
 };
 
 const showPendingTasks = (req, res) => {
@@ -15,17 +15,12 @@ const showPendingTasks = (req, res) => {
 
 const addPendingTask = (req, res) => {
   const pending = new Pending(req.body);
-  const isUndoCompleted = req?.action == "UNSELECT";
   console.log(req.body)
   
   pending
     .save()
     .then((result) => {
-      if (isUndoCompleted) {
-        res.json({ success: true, isRedirectRequired: false });
-      } else {
-        res.json({ success: true, isRedirectRequired: true });
-      }
+      res.json({ success: true });
     })
     .catch((err) => {
       console.log(err);
@@ -68,7 +63,7 @@ const addCompletedTasks = (req, res) => {
 
 const deleteCompletedTask = (req, res) => {
     const id = req.params.id;
-    console.log('delete completed', id)
+    console.log('delete completed task', id)
 
     Completed.findByIdAndDelete(id).then((result) => {
         console.log('delete successful', id);
@@ -79,12 +74,27 @@ const deleteCompletedTask = (req, res) => {
     });
 };
 
+const updateOnePendingTask = (req, res) => {
+  const id = req.params.id;
+  const updatedTaskContent = req.body;
+  console.log('update 1 pending task', id, updatedTaskContent)
+
+  Pending.findByIdAndUpdate(id, updatedTaskContent).then((result) => {
+      console.log('update successful', id);
+      //redirect
+      res.json({success : true});
+  }).catch((err) => {
+      console.log(err);
+  });
+};
+
 module.exports = {
-  showAddTaskForm,
   showPendingTasks,
   addPendingTask,
   deletePendingTask,
   showCompletedTasks,
   addCompletedTasks,
-  deleteCompletedTask
+  deleteCompletedTask,
+  redirectToPending,
+  updateOnePendingTask
 };
