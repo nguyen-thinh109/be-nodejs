@@ -10,6 +10,8 @@ router.get("/", signInController.redirect);
 //Display sign-in
 router.get("/sign-in", signInController.showSignInPage);
 
+router.post("/sign-in", signInController.signIn);
+
 //Display pending tasks
 router.get("/pending", taskController.showPendingTasks);
 
