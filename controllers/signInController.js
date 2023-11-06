@@ -1,4 +1,4 @@
-var crypto = require('crypto');
+const UserInfo = require('../models/userInfo');
 
 const showSignInPage = (req, res) => {
     res.render("sign-in");
@@ -9,19 +9,36 @@ const redirect = (req, res) => {
 };
 
 const signIn = (req, res) => {
-    const {username, pasword} = req.body;
+    const {username , password} = req.body;
 
-    var decrypt = crypto.createDecryptor();
+    UserInfo.findOne({ username: username, password: password })
+      .then((result) => {
+        // res.json({ success: true });
+        console.log(req.body, result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-    decrypt.update(username);
+};
 
-    var decrypted = decrypt.finalize();
+const signUp = (req, res) => {
+    const userInfo = new UserInfo(req.body);
 
-    console.log(request, decrypted)
+    userInfo
+      .save()
+      .then((result) => res.json({ success: true }))
+      .catch((err) => {
+        console.log(err);
+      });
+
+    console.log(req.body)
+    
 };
 
 module.exports = {
     redirect,
     showSignInPage,
-    signIn
+    signIn,
+    signUp
 };
