@@ -43,6 +43,8 @@
         const failureMessage = document.querySelector('#failure-msg');        
 
         let timer;
+        let requestAmount = 0;
+        let latestUsername = '', latestPassword = '';
 
         const sha256 = async (data) => {
             const textAsBuffer = new TextEncoder().encode(data);
@@ -53,10 +55,23 @@
         }
 
         async function signIn() {
-            console.log(usernameInput.value, passwordInput.value);
+            clearTimeout(timer);
 
-            const username = await sha256(usernameInput.value);
-            const password = await sha256(passwordInput.value);
+            if (latestUsername == usernameInput.value?.trim() && latestPassword == passwordInput.value?.trim() && requestAmount > 3) {
+                signInBtn.disabled = true;
+                failPopup.classList.remove('hidden');
+                failureMessage.innerHTML = 'Exceed 3 times of the same info';
+
+                timer = setTimeout(() => {
+                    failPopup.classList.add('hidden');
+                    signInBtn.disabled = false;
+                    }, 1500)
+
+                return;
+            }
+
+            const username = await sha256(usernameInput.value?.trim());
+            const password = await sha256(passwordInput.value?.trim());
 
             loading.classList.remove('hidden');
 
@@ -72,13 +87,17 @@
                 signInBtn.disabled = true;
                 if (data?.success) {
                     successPopup.classList.remove('hidden');
-
+                    
                     timer = setTimeout(() => {
                       window.location.href = '/pending';
                     }, 1500)
                 } else {
                     failPopup.classList.remove('hidden');
                     failureMessage.innerHTML = data?.error;
+                    requestAmount++;
+
+                    latestUsername = usernameInput.value?.trim();
+                    latestPassword = passwordInput.value?.trim();
 
                     timer = setTimeout(() => {
                       loading.classList.add('hidden');
