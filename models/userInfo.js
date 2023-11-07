@@ -10,6 +10,14 @@ const userInfoSchema = new Schema({
         type: String,
         require: true
     },
+    phoneNumber: {
+        type: String,
+        require: false
+    },
+    email: {
+        type: String,
+        require: false
+    },
 }, { timestamps: true });
 
 const UserInfo = mongoose.model('userInfo', userInfoSchema);

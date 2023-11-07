@@ -7,10 +7,17 @@ const signOutController = require('../controllers/signOutController');
 
 router.get("/", signInController.redirect);
 
-//Display sign-in
+//Display sign-in page
 router.get("/sign-in", signInController.showSignInPage);
 
+//Send sign-in info
 router.post("/sign-in", signInController.signIn);
+
+//Display sign-up page
+router.get("/sign-up", signInController.showSignUpPage);
+
+//Send sign-up info
+router.post("/sign-up", signInController.signUp);
 
 //Display pending tasks
 router.get("/pending", taskController.showPendingTasks);

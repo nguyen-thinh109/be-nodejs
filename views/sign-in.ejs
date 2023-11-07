@@ -11,7 +11,7 @@
 <body class="h-screen flex items-center justify-center relative">
     <main class="w-full px-4">
         <h1 class="text-center mb-4 text-xl font-bold">Sign in</h1>
-        <form action="/sign-in" method="post">
+        <div>
             <label for="username" class="pb-2 block">Username:</label>
             <input type="text" name="username" id="username" class="mb-4 block w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
             <label for="password" class="pb-2 block">Password:</label>
@@ -21,7 +21,9 @@
                 <button type="button" id="sign-in" class="px-8 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="signIn()">Sign-in</button>
                 <button type="button" id="forget-pasword" class="px-3 py-2 text-sm italic rounded-md">Forget pasword</button>
             </div>
-        </form>
+            <a href="/sign-up"><p class="text-center">Create a new account</p></a>
+            
+        </div>
     </main>
 
         <!-- Loading -->
@@ -38,6 +40,7 @@
         const successPopup = document.querySelector('.success');
         const failPopup = document.querySelector('.fail');
         const signInBtn = document.querySelector('#sign-in');
+        const failureMessage = document.querySelector('#failure-msg');        
 
         let timer;
 
@@ -66,14 +69,21 @@
                 headers: { "Content-Type": "application/json" }})
             .then(res => res.json())
             .then(data => {
-                console.log('log in', data)
+                signInBtn.disabled = true;
                 if (data?.success) {
-                    signInBtn.disabled = true;
-
                     successPopup.classList.remove('hidden');
 
                     timer = setTimeout(() => {
                       window.location.href = '/pending';
+                    }, 1500)
+                } else {
+                    failPopup.classList.remove('hidden');
+                    failureMessage.innerHTML = data?.error;
+
+                    timer = setTimeout(() => {
+                      loading.classList.add('hidden');
+                      failPopup.classList.add('hidden');
+                      signInBtn.disabled = false;
                     }, 1500)
                 }
             })

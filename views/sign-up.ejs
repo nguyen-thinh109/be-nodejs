@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create a new account</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body class="h-screen flex items-center justify-center relative">
+    <main class="w-full px-4">
+        <h2 class="text-center mb-4 text-xl font-bold">Create a new account</h2>
+        <div>
+            <label for="username" class="pb-2 block">Username:</label>
+            <input type="text" name="username" id="username" class="mb-4 block w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+            <label for="password" class="pb-2 block">Password:</label>
+            <input type="password" name="password" id="password" class="mb-4 block w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+            <label for="phoneNumber" class="pb-2 block">Phone number:</label>
+            <input type="tel" name="phoneNumber" id="phoneNumber" class="mb-4 block w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+            <label for="email" class="pb-2 block">Email:</label>
+            <input type="email" name="email" id="email" class="mb-4 block w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
+
+            <div class="flex justify-evenly items-center my-8">
+                <button type="button" id="sign-in" class="px-8 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="signUp()">Sign-up</button>
+                <a href="/sign-in" target="_parent" rel="noopener noreferrer"><button type="button" id="forget-pasword" class="px-3 py-2 text-sm italic rounded-md">Sign-in</button></a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading -->
+    <%- include('./comp/loading') %>
+
+    <!-- Result pop-up -->
+    <%- include('./comp/success-popup') %>
+    <%- include('./comp/fail-popup') %>
+
+    <script>
+        const usernameInput = document.querySelector('#username');
+        const passwordInput = document.querySelector('#password');
+        const phoneNumberInput = document.querySelector('#phoneNumber');
+        const emailInput = document.querySelector('#email');
+
+        const loading = document.querySelector('.loading');
+        const successPopup = document.querySelector('.success');
+        const failPopup = document.querySelector('.fail');
+        const signInBtn = document.querySelector('#sign-in');
+
+        let timer;
+
+        const sha256 = async (data) => {
+            const textAsBuffer = new TextEncoder().encode(data);
+            const hashBuffer = await window.crypto.subtle.digest('SHA-256', textAsBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer))
+            const digest = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return digest;
+        }
+
+        async function signUp() {
+            console.log(usernameInput.value, passwordInput.value, phoneNumberInput.value, emailInput.value);
+
+            const username = await sha256(usernameInput.value);
+            const password = await sha256(passwordInput.value);
+            const phoneNumber = await sha256(phoneNumberInput.value);
+            const email = await sha256(emailInput.value);
+
+            loading.classList.remove('hidden');
+
+            fetch('/sign-up', {
+                method: 'POST',
+                body: JSON.stringify({
+                    username,
+                    password,
+                    phoneNumber,
+                    email
+                }),
+                headers: { "Content-Type": "application/json" }})
+            .then(res => res.json())
+            .then(data => {
+                if (data?.success) {
+                    signInBtn.disabled = true;
+
+                    successPopup.classList.remove('hidden');
+
+                    timer = setTimeout(() => {
+                      window.location.href = '/pending';
+                    }, 1500)
+                }
+            })
+            
+        }
+    </script>
+</body>
+
+</html>
