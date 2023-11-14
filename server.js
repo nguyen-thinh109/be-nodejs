@@ -23,7 +23,7 @@ app.set("views", "./views");
 
 //Connect to db
 mongoose
-  .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
   .then((res) => {
     console.log("Connected to db");
     app.listen(port);
