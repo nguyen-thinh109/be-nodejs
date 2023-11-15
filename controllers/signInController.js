@@ -1,5 +1,10 @@
 const UserInfo = require('../models/userInfo');
 
+const handleErrors = (err) => {
+  // res.json({ success: false, error: err })
+  console.log(err.message, err.code);
+}
+
 const showSignInPage = (req, res) => {
   res.render("sign-in");
 };
@@ -21,8 +26,7 @@ const signIn = (req, res) => {
       }
     })
     .catch((err) => {
-      res.json({ success: false, error: err })
-      console.log(err);
+      handleErrors(err);
     });
 
 };
@@ -34,8 +38,9 @@ const signUp = (req, res) => {
     .save()
     .then((result) => res.json({ success: true }))
     .catch((err) => {
-      res.json({ success: false, error: err })
-      console.log(err);
+      // res.json({ success: false, error: err })
+      // console.log(err);
+      handleErrors(err);
     });
 
   console.log(req.body)
