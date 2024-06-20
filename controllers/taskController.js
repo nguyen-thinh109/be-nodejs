@@ -138,7 +138,7 @@ const deleteCompletedTask = async (req, res) => {
     console.log("deleteCompletedTask", id, 'at index', index);
 
     await fsPromises.writeFile(
-        path.join(__dirname, '..', 'models', 'pending.json'),
+        path.join(__dirname, '..', 'models', 'completed.json'),
         JSON.stringify(completeDB.completes)
     );
 
