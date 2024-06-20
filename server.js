@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
 
 // Set up Global configuration access
@@ -9,7 +9,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const routes = require("./routes/routes");
-const port = process.env.port;
+const port = process.env.port || 4201;
 
 //Middlewares & static files
 app.use(morgan("dev"));
@@ -22,15 +22,17 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 
 //Connect to db
-mongoose
-  .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((res) => {
-    console.log("Connected to db");
-    app.listen(port);
-  })
-  .catch((err) => {
-    console.log("Couldn't connect to MongoDB", err);
-  });
+// mongoose
+//   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+//   .then((res) => {
+//     console.log("Connected to db");
+//     app.listen(port);
+//   })
+//   .catch((err) => {
+//     console.log("Couldn't connect to MongoDB", err);
+//   });
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
 
 //Blog routes
 app.use(routes);

@@ -4,8 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pending tasks!!!</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
   </head>
 
   <body class="relative">
@@ -19,15 +23,15 @@
       <% if (tasks.length) { %>
       <ul class="list">
         <% for (let item of tasks) { %>
-        <li class="text-sm mb-2">
-          <div class="flex items-center border-b border-solid border-gray-200 pb-2">
-            <input type="checkbox" name="<%= item._id %>" id="<%= item._id %>" class="mr-2 block" onchange="handleSelectionChange(event, '<%= item._id %>', '<%= item.task %>')" />
+        <li class="text-sm mb-4">
+          <div class="flex items-center border-b border-solid border-gray-400 pb-4">
+            <input type="checkbox" name="<%= item.id %>" id="<%= item.id %>" class="mr-2 block" onchange="handleSelectionChange(event, '<%= item.id %>', '<%= item.task %>')" />
             <span class="block flex-1">
               <%= item.task %>
             </span>
-            <div class="">
-              <div class="w-6 h-6 grid place-items-center mr-2" onclick="handleEditTask('<%= item._id %>', '<%= item.task %>')"><i class="fa-regular fa-pen-to-square"></i></div>
-              <div class="w-6 h-6 grid place-items-center" onclick="handleDeletion('<%= item._id %>')"><i class="fa-regular fa-trash-can"></i></div>
+            <div class="ml-3">
+              <div class="w-6 h-6 grid place-items-center mr-2" onclick="handleEditTask('<%= item.id %>', '<%= item.task %>')"><i class="fa-regular fa-pen-to-square"></i></div>
+              <div class="w-6 h-6 grid place-items-center" onclick="handleDeletion('<%= item.id %>')"><i class="fa-regular fa-trash-can"></i></div>
             </div>
           </div>
         </li>
@@ -51,7 +55,7 @@
     <%- include('./comp/fail-popup') %>
 
     <!-- Add/Edit task pop-up -->
-    <div id="pop-up" class="p-4 h-full w-full absolute z-30 top-0 left-0 bg-white hidden">
+    <div id="pop-up" class="p-4 h-full w-full absolute z-30 top-0 left-0 bg-nordic hidden">
       <h1 class="text-center mb-4 text-xl font-bold title-taskPopup"></h1>
       <div class="w-full">
           <textarea name="task" id="edit-task-input" cols="30" rows="5" class="w-full text-black p-2 border border-gray-200 focus:outline-none focus:ring focus:border-blue-300 rounded" required></textarea>
@@ -82,7 +86,7 @@
 
         function handleSelectionChange(event, id, task) {
             console.log('selected', event.target.checked, id, task);
-            const requestBody = JSON.stringify({ task: task });
+            const requestBody = JSON.stringify({ id, task });
 
             if (event.target.checked) {
               loading.classList.remove('hidden');
@@ -92,7 +96,12 @@
               .then((data) => {
                   console.log('handleChange', data);
                   if (data?.success) {
-                    handleDeletion(id);
+                    loading.classList.add('hidden');
+                    successPopup.classList.remove('hidden');
+
+                    timer = setTimeout(() => {
+                      window.location.reload();
+                    }, 2000)
                   }                    
                 })
               .catch((err) => console.log(err))
@@ -119,12 +128,20 @@
           fetch('/pending', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" }})
               .then(res => res.json())
               .then((data) => {
+                console.log('fetch pending', data);
+                loading.classList.add('hidden');
                   if (data?.success) {
                     successPopup.classList.remove('hidden');
 
                     timer = setTimeout(() => {
                       window.location.reload();
-                    }, 1500)
+                    }, 2000)
+                  } else {
+                    failPopup.classList.remove('hidden');
+
+                    timer = setTimeout(() => {
+                      failPopup.classList.add('hidden');
+                    }, 3000)
                   }
               })
               .catch((err) => console.log(err))
@@ -143,7 +160,7 @@
 
         function confirmEditTask() {
           let editedContent = editTaskInput.value;
-          let requestBody = JSON.stringify({task: editedContent});
+          let requestBody = JSON.stringify({id: currentEditingTaskId, task: editedContent});
           
           taskPopup.classList.add('hidden');
           loading.classList.remove('hidden');
@@ -182,6 +199,12 @@
                 timer = setTimeout(() => {
                   window.location.reload();
                 }, 1500)
+              } else {
+                failPopup.classList.remove('hidden');
+                
+                timer = setTimeout(() => {
+                  failPopup.classList.add('hidden');
+                }, 3000)
               }
             })
             .catch((err) => console.log(err))
@@ -191,11 +214,11 @@
           console.log('signOut');
           localStorage.removeItem('todoAuthToken');
 
-          // fetch("/sign-out/", { method: 'POST' })
-          // .then(res => res.json())
-          // .then((data) => {
-          //   console.log(data);
-          // }).catch((err) => console.log(err))
+          fetch("/sign-out/", { method: 'POST' })
+          .then(res => res.json())
+          .then((data) => {
+            console.log(data);
+          }).catch((err) => console.log(err))
         }
     </script>
   </body>

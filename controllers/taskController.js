@@ -1,91 +1,151 @@
-const Pending = require("../models/pending");
-const Completed = require("../models/completed");
+const crypto = require('crypto');
+const fsPromises = require('fs').promises;
+const path = require('path');
+
+const pendingDB = {
+  pendings: require('../models/pending.json'),
+  setPendings: function (db) { this.pendings = db }
+};
+
+const completeDB = {
+  completes: require('../models/completed.json'),
+  setCompletes: function (db) { this.completes = db }
+};
 
 const redirectToPending = (req, res) => {
   res.redirect("/pending");
 };
 
 const showPendingTasks = (req, res) => {
-  Pending.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render("pending", { tasks: result });
-    });
+  console.log('showPendingTasks', pendingDB.pendings);
+  res.render("pending", { tasks: pendingDB.pendings });
 };
 
-const addPendingTask = (req, res) => {
-  const pending = new Pending(req.body);
-  console.log(req.body)
-  
-  pending
-    .save()
-    .then((result) => {
-      res.json({ success: true });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+const addPendingTask = async (req, res) => {
+  try {
+    let uuid = crypto.randomUUID();
+  //store the new task
+    const newPendingTask = {
+      id: uuid,
+      task: req.body.task
+    };
+
+    pendingDB.setPendings([...pendingDB.pendings, newPendingTask]);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'pending.json'),
+        JSON.stringify(pendingDB.pendings)
+    );
+
+    console.log('addPendingTask', req.body);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ 'message': err.message });
+  }
 };
 
-const deletePendingTask = (req, res) => {
-  const id = req.params.id;
-  console.log("delete", id);
+const deletePendingTask = async (req, res) => {
+  try {
+    //get the task
+    const id = req.params.id;
+    const index = pendingDB.pendings.findIndex(item => item.id == id);
 
-  Pending.findByIdAndDelete(id)
-    .then((result) => {
-      res.json({ success: true });
-    })
-    .catch((err) => console.log(err));
+    pendingDB.pendings.splice(index, 1);
+
+    pendingDB.setPendings([...pendingDB.pendings]);
+
+    console.log("deletePendingTask", id, 'at index', index);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'pending.json'),
+        JSON.stringify(pendingDB.pendings)
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ 'message': err.message });
+  }
+};
+
+const updateOnePendingTask = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedTaskObj = req.body;
+    console.log('update a pending task at', id, updatedTaskObj);
+
+    const index = pendingDB.pendings.findIndex(item => item.id == id);
+
+    pendingDB.pendings.splice(index, 1, updatedTaskObj);
+
+    pendingDB.setPendings([...pendingDB.pendings]);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'pending.json'),
+        JSON.stringify(pendingDB.pendings)
+    );
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(500).json({ 'message': error.message });
+  }
 };
 
 const showCompletedTasks = (req, res) => {
-  Completed.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render("completed", { tasks: result });
-    });
+  res.render("completed", { tasks: completeDB.completes });
 };
 
-const addCompletedTasks = (req, res) => {
-    console.log(req.body);
-    const complete = new Completed(req.body);
+const addCompletedTasks = async (req, res) => {
+  console.log('addCompletedTasks', req.body);
+  try {
+    //Add completed task into list
+    const newCompleteTask = {...req.body};
 
-    complete
-        .save()
-        .then((result) => {
-            console.log(result);
-            res.json({success : true});
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+    completeDB.setCompletes([...completeDB.completes, newCompleteTask]);
+
+    await fsPromises.writeFile(
+      path.join(__dirname, '..', 'models', 'completed.json'),
+      JSON.stringify(completeDB.completes)
+    );
+
+    //Remove completed from pending
+    const index = pendingDB.pendings.findIndex(item => item.id == req.body.id);
+
+    pendingDB.pendings.splice(index, 1);
+
+    pendingDB.setPendings([...pendingDB.pendings]);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'pending.json'),
+        JSON.stringify(pendingDB.pendings)
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-const deleteCompletedTask = (req, res) => {
+const deleteCompletedTask = async (req, res) => {
+  try {
+    //get the task
     const id = req.params.id;
-    console.log('delete completed task', id)
+    const index = completeDB.completes.findIndex(item => item.id == id);
 
-    Completed.findByIdAndDelete(id).then((result) => {
-        console.log('delete successful', id);
-        //redirect
-        res.json({success : true});
-    }).catch((err) => {
-        console.log(err);
-    });
-};
+    completeDB.completes.splice(index, 1);
 
-const updateOnePendingTask = (req, res) => {
-  const id = req.params.id;
-  const updatedTaskContent = req.body;
-  console.log('update 1 pending task', id, updatedTaskContent)
+    completeDB.setCompletes([...completeDB.completes]);
 
-  Pending.findByIdAndUpdate(id, updatedTaskContent).then((result) => {
-      console.log('update successful', id);
-      //redirect
-      res.json({success : true});
-  }).catch((err) => {
-      console.log(err);
-  });
+    console.log("deleteCompletedTask", id, 'at index', index);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'pending.json'),
+        JSON.stringify(completeDB.completes)
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ 'message': err.message });
+  }
 };
 
 module.exports = {
