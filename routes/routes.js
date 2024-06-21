@@ -37,6 +37,9 @@ router.get("/completed", taskController.showCompletedTasks);
 //Add new completed task
 router.post("/completed", taskController.addCompletedTasks);
 
+//Alter a completed task into a pending one
+router.post("/revert", taskController.revertCompletedTasks);
+
 //Delete completed tasks
 router.delete("/completed/:id", taskController.deleteCompletedTask);
 

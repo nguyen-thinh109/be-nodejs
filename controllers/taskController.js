@@ -38,7 +38,7 @@ const addPendingTask = async (req, res) => {
     );
 
     console.log('addPendingTask', req.body);
-    res.status(200).json({ success: true });
+    res.status(201).json({ success: true });
   } catch (err) {
     res.status(500).json({ 'message': err.message });
   }
@@ -92,6 +92,7 @@ const updateOnePendingTask = async (req, res) => {
 
 const showCompletedTasks = (req, res) => {
   res.render("completed", { tasks: completeDB.completes });
+  console.log('showCompletedTasks', completeDB.completes);
 };
 
 const addCompletedTasks = async (req, res) => {
@@ -119,7 +120,7 @@ const addCompletedTasks = async (req, res) => {
         JSON.stringify(pendingDB.pendings)
     );
 
-    res.status(200).json({ success: true });
+    res.status(201).json({ success: true });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -129,17 +130,50 @@ const deleteCompletedTask = async (req, res) => {
   try {
     //get the task
     const id = req.params.id;
-    const index = completeDB.completes.findIndex(item => item.id == id);
+    const otherCompletedTasks = completeDB.completes.filter(item => item.id !== id);
 
-    completeDB.completes.splice(index, 1);
+    completeDB.setCompletes([...otherCompletedTasks]);
 
-    completeDB.setCompletes([...completeDB.completes]);
-
-    console.log("deleteCompletedTask", id, 'at index', index);
+    console.log("deleteCompletedTask", id);
 
     await fsPromises.writeFile(
         path.join(__dirname, '..', 'models', 'completed.json'),
-        JSON.stringify(completeDB.completes)
+        JSON.stringify(otherCompletedTasks)
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ 'message': err.message });
+  }
+};
+
+const revertCompletedTasks = async (req, res) => {
+  try {
+    //get the task
+    const id = req.body.id;
+    const otherCompletedTasks = completeDB.completes.filter(item => item.id !== id);
+
+    completeDB.setCompletes([...otherCompletedTasks]);
+
+    console.log("revertCompletedTasks", id);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'completed.json'),
+        JSON.stringify(otherCompletedTasks)
+    );
+
+    //Put back to pending list
+    let uuid = crypto.randomUUID();
+    const revertedPendingTask = {
+      id: uuid,
+      task: req.body.task
+    };
+
+    pendingDB.setPendings([...pendingDB.pendings, revertedPendingTask]);
+
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'pending.json'),
+        JSON.stringify(pendingDB.pendings)
     );
 
     res.status(200).json({ success: true });
@@ -156,5 +190,6 @@ module.exports = {
   addCompletedTasks,
   deleteCompletedTask,
   redirectToPending,
-  updateOnePendingTask
+  updateOnePendingTask,
+  revertCompletedTasks
 };
