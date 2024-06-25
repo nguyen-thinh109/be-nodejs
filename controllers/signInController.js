@@ -1,4 +1,9 @@
-const UserInfo = require('../models/userInfo');
+const usersDB = {
+  users: require('../models/users.json'),
+  setUser: (users) => {
+    this.users = users
+  }
+};
 
 const handleErrors = (err) => {
   // res.json({ success: false, error: err })
@@ -17,35 +22,37 @@ const redirect = (req, res) => {
   res.redirect("/sign-in");
 };
 
-const signIn = (req, res) => {
+const signIn = async (req, res) => {
   const { username, password } = req.body;
 
-  UserInfo.findOne({ username: username, password: password })
-    .then((result) => {
-      console.log(req.body, result);
-      if (result != null) {
-        res.json({ success: true });
-      } else {
-        res.json({ success: false, error: 'Tài khoản không tồn tại!' })
-      }
-    })
-    .catch((err) => {
-      handleErrors(err);
-    });
+  console.log(username, password);
 
+  if (!username || ! password) {
+    return res.status(400).json({message: 'Username/ password is required!'})
+  }
+
+  let foundUser = usersDB.users.find(user => user?.username);
+
+  if (!foundUser) {
+    return res.status(404).json({message: 'User not found!'})
+  }
+
+  let isPwMatched = await bcrypt.compare(password, foundUser.password);
+
+  console.log('foundUser', isPwMatched)
 };
 
 const signUp = (req, res) => {
-  const userInfo = new UserInfo(req.body);
+  // const userInfo = new UserInfo(req.body);
 
-  userInfo
-    .save()
-    .then((result) => res.json({ success: true }))
-    .catch((err) => {
-      // res.json({ success: false, error: err })
-      // console.log(err);
-      handleErrors(err);
-    });
+  // userInfo
+  //   .save()
+  //   .then((result) => res.json({ success: true }))
+  //   .catch((err) => {
+  //     // res.json({ success: false, error: err })
+  //     // console.log(err);
+  //     handleErrors(err);
+  //   });
 
   console.log(req.body)
 

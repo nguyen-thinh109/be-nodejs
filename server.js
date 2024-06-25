@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
-const morgan = require("morgan");
-// const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
+const corsOptions = require('./config/corsOptions');
+const cors = require('cors');
 
 // Set up Global configuration access
 const dotenv = require('dotenv'); 
@@ -11,8 +11,10 @@ dotenv.config();
 const routes = require("./routes/routes");
 const port = process.env.port || 4201;
 
+//CORS
+app.use(cors(corsOptions));
+
 //Middlewares & static files
-app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
@@ -20,17 +22,6 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 //Register view engine
 app.set("view engine", "ejs");
 app.set("views", "./views");
-
-//Connect to db
-// mongoose
-//   .connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then((res) => {
-//     console.log("Connected to db");
-//     app.listen(port);
-//   })
-//   .catch((err) => {
-//     console.log("Couldn't connect to MongoDB", err);
-//   });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
 
