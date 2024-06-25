@@ -9,6 +9,10 @@ const showSignInPage = (req, res) => {
   res.render("sign-in");
 };
 
+const showSignUpPage = (req, res) => {
+  res.render('sign-up')
+}
+
 const redirect = (req, res) => {
   res.redirect("/sign-in");
 };
@@ -46,10 +50,6 @@ const signUp = (req, res) => {
   console.log(req.body)
 
 };
-
-const showSignUpPage = (req, res) => {
-  res.render('sign-up')
-}
 
 module.exports = {
   redirect,
