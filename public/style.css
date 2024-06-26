@@ -939,3 +939,7 @@ body {
 .bg-nordic {
   background-color: #013238;
 }
+
+input {
+  color: black;
+}

@@ -22,8 +22,8 @@
             <input type="email" name="email" id="email" class="mb-4 block w-full border border-gray-300 border-solid rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300">
 
             <div class="flex justify-evenly items-center my-8">
-                <button type="button" id="sign-in" class="px-8 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="signUp()">Sign-up</button>
-                <a href="/sign-in" target="_parent" rel="noopener noreferrer"><button type="button" id="forget-pasword" class="px-3 py-2 text-sm italic rounded-md">Sign-in</button></a>
+                <button type="button" id="sign-up" class="px-8 py-2 text-white bg-green-600 text-sm italic rounded-md" onclick="signUp()">Sign-up</button>
+                <a href="/sign-in" target="_parent" rel="noopener noreferrer"><button type="button" id="forget-pasword" class="px-8 py-2 text-sm italic rounded-md">Sign-in</button></a>
             </div>
         </div>
     </main>
@@ -44,7 +44,8 @@
         const loading = document.querySelector('.loading');
         const successPopup = document.querySelector('.success');
         const failPopup = document.querySelector('.fail');
-        const signInBtn = document.querySelector('#sign-in');
+        const signUpBtn = document.querySelector('#sign-up');
+        const failureMessage = document.querySelector('#failure-msg');
 
         let timer;
 
@@ -59,10 +60,21 @@
         async function signUp() {
             console.log(usernameInput.value, passwordInput.value, phoneNumberInput.value, emailInput.value);
 
-            const username = await sha256(usernameInput.value);
-            const password = await sha256(passwordInput.value);
-            const phoneNumber = await sha256(phoneNumberInput.value);
-            const email = await sha256(emailInput.value);
+            const username = usernameInput.value?.trim();
+            const password = await sha256(passwordInput.value?.trim());
+            const phoneNumber = phoneNumberInput.value?.trim();
+            const email = emailInput.value?.trim();
+
+            if (!username || !password || !phoneNumber || !email) {
+                failPopup.classList.remove('hidden');
+                    failureMessage.innerHTML = 'Username/password/phone number/email is required!';
+
+                    timer = setTimeout(() => {
+                        failPopup.classList.add('hidden');
+                        loading.classList.add('hidden');
+                    }, 3000)
+                return;
+            }
 
             loading.classList.remove('hidden');
 
@@ -78,16 +90,21 @@
             .then(res => res.json())
             .then(data => {
                 if (data?.success) {
-                    signInBtn.disabled = true;
-
-                    successPopup.classList.remove('hidden');
+                    successPopup.classList.remove('hidden');                    
 
                     timer = setTimeout(() => {
                       window.location.href = '/pending';
                     }, 1500)
+                } else {
+                    failPopup.classList.remove('hidden');
+                    failureMessage.innerHTML = data.message || '';
+
+                    timer = setTimeout(() => {
+                        failPopup.classList.add('hidden');
+                        loading.classList.add('hidden');
+                    }, 3000)
                 }
             })
-            
         }
     </script>
 </body>

@@ -59,20 +59,31 @@
             const username = usernameInput.value?.trim(), 
             currentPassword = passwordInput.value?.trim();
 
+            if (!currentPassword || !username) {
+                failPopup.classList.remove('hidden');
+                failureMessage.innerHTML = 'Username/password is empty';
+                
+                timer = setTimeout(() => {
+                    failPopup.classList.add('hidden');
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                }, 2000)
+                
+                return;
+            }
+
             if (latestUsername == username && latestPassword == currentPassword && requestAmount > 3) {
-                signInBtn.disabled = true;
                 failPopup.classList.remove('hidden');
                 failureMessage.innerHTML = 'Exceed 3 times of the same info';
 
                 timer = setTimeout(() => {
                     failPopup.classList.add('hidden');
-                    signInBtn.disabled = false;
-                    }, 2000)
+                }, 2000)
 
                 return;
             }
 
-            const password = await sha256(currentPassword);
+            const password = currentPassword;
 
             loading.classList.remove('hidden');
 
@@ -91,7 +102,7 @@
                     }, 1500)
                 } else {
                     failPopup.classList.remove('hidden');
-                    failureMessage.innerHTML = data?.error;
+                    failureMessage.innerHTML = data?.message;
                     requestAmount++;
 
                     latestUsername = usernameInput.value?.trim();
@@ -100,7 +111,8 @@
                     timer = setTimeout(() => {
                       loading.classList.add('hidden');
                       failPopup.classList.add('hidden');
-                      signInBtn.disabled = false;
+                      usernameInput.value = '';
+                      passwordInput.value = '';
                     }, 1500)
                 }
             })
