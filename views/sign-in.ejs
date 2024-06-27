@@ -95,6 +95,7 @@
             .then(data => {
                 signInBtn.disabled = true;
                 if (data?.success) {
+                    localStorage.setItem('accessToken', data.accessToken)
                     successPopup.classList.remove('hidden');
                     
                     timer = setTimeout(() => {

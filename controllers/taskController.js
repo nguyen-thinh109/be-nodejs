@@ -17,7 +17,7 @@ const redirectToPending = (req, res) => {
 };
 
 const showPendingTasks = (req, res) => {
-  console.log('showPendingTasks', pendingDB.pendings);
+  // console.log('showPendingTasks', pendingDB.pendings);
   res.render("pending", { tasks: pendingDB.pendings });
 };
 

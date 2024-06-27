@@ -3,16 +3,20 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const corsOptions = require('./config/corsOptions');
 const cors = require('cors');
-
+const credentials = require('./middlewares/credentials.js')
+const routes = require("./routes/routes");
+const port = process.env.port || 4201;
+const verifyJWT = require('./middlewares/verifyJWT.js');
 // Set up Global configuration access
 const dotenv = require('dotenv'); 
 dotenv.config();
 
-const routes = require("./routes/routes");
-const port = process.env.port || 4201;
-
+// Handle options credentials check - before CORS!
+// and fetch cookies credentials requirement
+app.use(credentials);
 //CORS
 app.use(cors(corsOptions));
+app.use(verifyJWT);
 
 //Middlewares & static files
 app.use(express.static("public"));

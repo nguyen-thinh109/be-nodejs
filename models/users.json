@@ -1,8 +1,1 @@
-[
-    {
-        "username": "thinhnguyen",
-        "phoneNumber": "0984018891",
-        "email": "nd.thinh91@gmail.com",
-        "password": "$2a$10$pwwbhIcIdrOuwgMfgzIA5.ZalThJvvzVQ6/I1D1.2ReaipmINVMQq"
-    }
-]
+[{"username":"thinhnguyen","phoneNumber":"0984018891","email":"nd.thinh91@gmail.com","password":"$2a$10$J9JobyB330VZ6MipZ9eQ9Oh87Hy9n1Kn167a1XjXuTKIzUX26bxUi","id":"92bef576-d1f5-440b-8b91-86d3ddd761cf","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRoaW5obmd1eWVuIiwiaWF0IjoxNzE5NDgwNTU0LCJleHAiOjE3MTk1NjY5NTR9.kve5xzJvvo5byEGxLR7dn5vd8aaB8_m0kUisz4YVTaE"}]

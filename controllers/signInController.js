@@ -8,6 +8,8 @@ const fsPromises = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+require('dotenv').config();
 
 const showSignInPage = (req, res) => {
   res.render("sign-in");
@@ -24,7 +26,7 @@ const redirect = (req, res) => {
 const signIn = async (req, res) => {
   const { username, password } = req.body;
 
-  console.log(username, password);
+  // console.log(username, password);
 
   if (!username || ! password) {
     return res.status(400).json({message: 'Username/ password is required!'})
@@ -41,14 +43,37 @@ const signIn = async (req, res) => {
   console.log('isPasswordMatched', isPwMatched)
 
   if (isPwMatched) {
-    return res.status(201).json({success: true});
+    // create JWTs
+    const accessToken = jwt.sign(
+      { "username": foundUser.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '30s' }
+    );
+  
+    const refreshToken = jwt.sign(
+      { "username": foundUser.username },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    // Saving refreshToken with current user
+    const otherUsers = usersDB.users.filter(person => person.username !== foundUser.username);
+    const currentUser = { ...foundUser, refreshToken };
+    usersDB.setUser([...otherUsers, currentUser]);
+    await fsPromises.writeFile(
+        path.join(__dirname, '..', 'models', 'users.json'),
+        JSON.stringify(usersDB.users)
+    );
+    res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    
+    return res.status(201).json({success: true, accessToken});
   } else {
     return res.status(404).json({message: 'User not found!'});
   }
 };
 
 const signUp = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const {username , password, phoneNumber, email} = req.body
   
   //Check duplicate username
@@ -70,10 +95,9 @@ const signUp = async (req, res) => {
   }
 
   try {
-
     //encrypt the password
     const hashedPwd = await bcrypt.hash(password, 10);
-    const newUser = {username, phoneNumber, email, password: hashedPwd}
+    const newUser = {username, phoneNumber, email, password: hashedPwd, id: crypto.randomUUID()}
     //set new user
     usersDB.setUser([...usersDB.users, newUser]);
   

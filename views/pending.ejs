@@ -80,7 +80,7 @@
         const addTaskBtn = document.querySelector('#add-btn');
         const editTaskBtn = document.querySelector('#edit-btn');
         const titlePopup = document.querySelector('.title-taskPopup');
-
+        const accessToken = localStorage.getItem('accessToken');
         let currentEditingTaskId = '';
         let timer;
 
@@ -212,7 +212,7 @@
 
         function signOut() {
           console.log('signOut');
-          localStorage.removeItem('todoAuthToken');
+          localStorage.removeItem('accessToken');
 
           fetch("/sign-out/", { method: 'POST' })
           .then(res => res.json())
