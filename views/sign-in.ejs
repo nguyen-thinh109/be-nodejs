@@ -83,7 +83,7 @@
                 return;
             }
 
-            const password = currentPassword;
+            const password = await sha256(currentPassword);
 
             loading.classList.remove('hidden');
 

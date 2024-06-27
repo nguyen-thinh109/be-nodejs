@@ -49,35 +49,44 @@ const signIn = async (req, res) => {
 
 const signUp = async (req, res) => {
   console.log(req.body);
+  const {username , password, phoneNumber, email} = req.body
   
   //Check duplicate username
-  let isUsernameDulpicated = usersDB.users.find(user => user?.username === req.body?.username)
+  let isUsernameDulpicated = usersDB.users.find(user => user?.username === username)
   if (isUsernameDulpicated) {
     return res.status(400).json({message: 'Username existed!'})
   }
 
   //Check duplicate phoneNumber
-  let isPhoneNumberDulpicated = usersDB.users.find(user => user?.phoneNumber === req.body?.phoneNumber)
+  let isPhoneNumberDulpicated = usersDB.users.find(user => user?.phoneNumber === phoneNumber)
   if (isPhoneNumberDulpicated) {
     return res.status(400).json({message: 'Phone number existed!'})
   }
 
   //Check duplicate email
-  let isEmailDulpicated = usersDB.users.find(user => user?.email === req.body?.email)
+  let isEmailDulpicated = usersDB.users.find(user => user?.email === email)
   if (isEmailDulpicated) {
     return res.status(400).json({message: 'Email existed!'})
   }
 
-  //set new user
-  usersDB.setUser([...usersDB.users, req.body]);
+  try {
 
-  await fsPromises.writeFile(
-    path.join(__dirname, '..', 'models', 'users.json'),
-    JSON.stringify(usersDB.users)
-  );
-
-  return res.status(201).json({success: true})
-
+    //encrypt the password
+    const hashedPwd = await bcrypt.hash(password, 10);
+    const newUser = {username, phoneNumber, email, password: hashedPwd}
+    //set new user
+    usersDB.setUser([...usersDB.users, newUser]);
+  
+    await fsPromises.writeFile(
+      path.join(__dirname, '..', 'models', 'users.json'),
+      JSON.stringify(usersDB.users)
+    );
+    
+    res.status(201).json({success: true});
+    
+  } catch (error) {
+    res.status(500).json({ 'message': err.message });
+  }
 };
 
 module.exports = {
