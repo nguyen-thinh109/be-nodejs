@@ -97,7 +97,7 @@
                 if (data?.success) {
                     localStorage.setItem('accessToken', data.accessToken)
                     successPopup.classList.remove('hidden');
-                    
+                    res.set
                     timer = setTimeout(() => {
                       window.location.href = '/pending';
                     }, 1500)

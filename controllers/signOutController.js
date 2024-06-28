@@ -1,5 +1,5 @@
 const signOut = (req, res) => {
-    console.log(req.cookies)
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
 };
 
 module.exports = {

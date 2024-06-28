@@ -16,7 +16,9 @@
     <main>
       <div class="relative mb-4">
         <h1 class="text-center text-xl font-bold">List</h1>
-        <div class="absolute top-0 right-0 transform translate-middle w-6 h-6 grid place-items-center" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+        <a href="/sign-in">
+          <div class="absolute top-0 right-0 transform translate-middle w-6 h-6 grid place-items-center" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+        </a>
       </div>
 
       <h2 class="mb-4 text-lg font-semibold underline">Pending</h2>
@@ -30,7 +32,7 @@
               <%= item.task %>
             </span>
             <div class="ml-3">
-              <div class="w-6 h-6 grid place-items-center mr-2" onclick="handleEditTask('<%= item.id %>', '<%= item.task %>')"><i class="fa-regular fa-pen-to-square"></i></div>
+              <div class="w-6 h-6 grid place-items-center" onclick="handleEditTask('<%= item.id %>', '<%= item.task %>')"><i class="fa-regular fa-pen-to-square"></i></div>
               <div class="w-6 h-6 grid place-items-center" onclick="handleDeletion('<%= item.id %>')"><i class="fa-regular fa-trash-can"></i></div>
             </div>
           </div>
@@ -83,6 +85,11 @@
         const accessToken = localStorage.getItem('accessToken');
         let currentEditingTaskId = '';
         let timer;
+        let token = localStorage.getItem('accessToken') || '';
+        let headers = { 
+          "Content-Type": "application/json", 
+          "authorization": `Bearer ${token}`
+        };
 
         function handleSelectionChange(event, id, task) {
             console.log('selected', event.target.checked, id, task);
@@ -125,7 +132,7 @@
           loading.classList.remove('hidden');
           clearTimeout(timer);
           
-          fetch('/pending', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" }})
+          fetch('/pending', { method: 'POST', body: requestBody, headers })
               .then(res => res.json())
               .then((data) => {
                 console.log('fetch pending', data);
@@ -165,7 +172,7 @@
           taskPopup.classList.add('hidden');
           loading.classList.remove('hidden');
 
-          fetch(`/pending/${currentEditingTaskId}`, { method: 'PUT', body: requestBody, headers: { "Content-Type": "application/json" }})
+          fetch(`/pending/${currentEditingTaskId}`, { method: 'PUT', body: requestBody, headers })
             .then(res => res.json())
             .then((data) => {
               console.log(data)
@@ -189,7 +196,7 @@
           loading.classList.remove('hidden');
           clearTimeout(timer);
 
-          fetch(`/pending/${id}`, { method: 'DELETE' })
+          fetch(`/pending/${id}`, { method: 'DELETE', headers })
             .then(res => res.json())
             .then((data) => {
               console.log(data)

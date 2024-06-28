@@ -20,6 +20,7 @@ const showSignUpPage = (req, res) => {
 }
 
 const redirect = (req, res) => {
+  console.log(req.headers)
   res.redirect("/sign-in");
 };
 
@@ -65,7 +66,7 @@ const signIn = async (req, res) => {
         JSON.stringify(usersDB.users)
     );
     res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-    
+    res.setHeader('Authorization', 'Bearer '+ accessToken); 
     return res.status(201).json({success: true, accessToken});
   } else {
     return res.status(404).json({message: 'User not found!'});

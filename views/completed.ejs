@@ -55,6 +55,11 @@
     const successPopup = document.querySelector('.success');
     const failPopup = document.querySelector('.fail');
     let timer;
+    let token = localStorage.getItem('accessToken') || '';
+    let headers = {
+      "Content-Type": "application/json",
+      "authorization": `Bearer ${token}`
+    };
 
     function handleSelectionChange(event, id, task) {
       console.log('unselected', event.target.checked, id, task)
@@ -63,7 +68,7 @@
       if (!event.target.checked) {
         loading.classList.remove('hidden');
 
-        fetch('/revert', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" } })
+        fetch('/revert', { method: 'POST', body: requestBody, headers })
           .then(res => res.json())
           .then((data) => {
             console.log('handleChange', data);
@@ -83,7 +88,7 @@
       loading.classList.remove('hidden');
       clearTimeout(timer);
 
-      fetch(`/completed/${id}`, { method: 'DELETE' })
+      fetch(`/completed/${id}`, { method: 'DELETE', headers })
       .then(res => res.json())
       .then((data) => {
         console.log(data);
@@ -104,13 +109,13 @@
 
     function signOut() {
       console.log('signOut');
-      localStorage.removeItem('todoAuthToken');
+      localStorage.removeItem('accessToken');
 
-      // fetch("/sign-out/", { method: 'POST' })
-      // .then(res => res.json())
-      // .then((data) => {
-      //   console.log(data);
-      // }).catch((err) => console.log(err))
+      fetch("/sign-out/", { method: 'POST' })
+      .then(res => res.json())
+      .then((data) => {
+        console.log(data);
+      }).catch((err) => console.log(err))
     }
   </script>
 </body>

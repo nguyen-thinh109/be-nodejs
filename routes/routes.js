@@ -3,7 +3,7 @@ const router = express.Router();
 const taskController = require('../controllers/taskController');
 const signInController = require('../controllers/signInController');
 const signOutController = require('../controllers/signOutController');
-
+const errorController = require('../controllers/errorController');
 
 router.get("/", signInController.redirect);
 
@@ -45,5 +45,11 @@ router.delete("/completed/:id", taskController.deleteCompletedTask);
 
 //Sign-out
 router.post("/sign-out", signOutController.signOut);
+
+//Unauthorize
+router.get("/unauthorized", errorController.unauthorized);
+
+//notFound
+router.get("/notFound", errorController.notFound);
 
 module.exports = router
