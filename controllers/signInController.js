@@ -19,8 +19,7 @@ const showSignUpPage = (req, res) => {
   res.render('sign-up')
 }
 
-const redirect = (req, res) => {
-  console.log(req.headers)
+const redirectToSignIn = (req, res) => {
   res.redirect("/sign-in");
 };
 
@@ -29,11 +28,11 @@ const signIn = async (req, res) => {
 
   // console.log(username, password);
 
-  if (!username || ! password) {
+  if (!username || !password) {
     return res.status(400).json({message: 'Username/ password is required!'})
   }
 
-  let foundUser = usersDB.users.find(user => user?.username);
+  let foundUser = usersDB.users.find(user => user?.username === username);
 
   if (!foundUser) {
     return res.status(404).json({message: 'User not found!'});
@@ -48,9 +47,9 @@ const signIn = async (req, res) => {
     const accessToken = jwt.sign(
       { "username": foundUser.username },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '30s' }
+      { expiresIn: '15s' }
     );
-  
+
     const refreshToken = jwt.sign(
       { "username": foundUser.username },
       process.env.REFRESH_TOKEN_SECRET,
@@ -66,8 +65,8 @@ const signIn = async (req, res) => {
         JSON.stringify(usersDB.users)
     );
     res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-    res.setHeader('Authorization', 'Bearer '+ accessToken); 
-    return res.status(201).json({success: true, accessToken});
+    res.cookie('token', accessToken)
+    return res.status(200).json({success: true});
   } else {
     return res.status(404).json({message: 'User not found!'});
   }
@@ -115,7 +114,7 @@ const signUp = async (req, res) => {
 };
 
 module.exports = {
-  redirect,
+  redirectToSignIn,
   showSignInPage,
   signIn,
   signUp,

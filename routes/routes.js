@@ -4,8 +4,9 @@ const taskController = require('../controllers/taskController');
 const signInController = require('../controllers/signInController');
 const signOutController = require('../controllers/signOutController');
 const errorController = require('../controllers/errorController');
+const verifyJWT = require('../middlewares/verifyJWT.js');
 
-router.get("/", signInController.redirect);
+router.get("/", signInController.redirectToSignIn);
 
 //Display sign-in page
 router.get("/sign-in", signInController.showSignInPage);
@@ -20,28 +21,28 @@ router.get("/sign-up", signInController.showSignUpPage);
 router.post("/sign-up", signInController.signUp);
 
 //Display pending tasks
-router.get("/pending", taskController.showPendingTasks);
+router.get("/pending", verifyJWT, taskController.showPendingTasks);
 
 //Add new task
-router.post("/pending", taskController.addPendingTask);
+router.post("/pending", verifyJWT, taskController.addPendingTask);
 
 //Delete pending tasks
-router.delete("/pending/:id", taskController.deletePendingTask);
+router.delete("/pending/:id", verifyJWT, taskController.deletePendingTask);
 
 //Update a pending task
-router.put("/pending/:id", taskController.updateOnePendingTask);
+router.put("/pending/:id", verifyJWT, taskController.updateOnePendingTask);
 
 //Display completed tasks
-router.get("/completed", taskController.showCompletedTasks);
+router.get("/completed", verifyJWT, taskController.showCompletedTasks);
 
 //Add new completed task
-router.post("/completed", taskController.addCompletedTasks);
+router.post("/completed", verifyJWT, taskController.addCompletedTasks);
 
 //Alter a completed task into a pending one
-router.post("/revert", taskController.revertCompletedTasks);
+router.post("/revert", verifyJWT, taskController.revertCompletedTasks);
 
 //Delete completed tasks
-router.delete("/completed/:id", taskController.deleteCompletedTask);
+router.delete("/completed/:id", verifyJWT, taskController.deleteCompletedTask);
 
 //Sign-out
 router.post("/sign-out", signOutController.signOut);

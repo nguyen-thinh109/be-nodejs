@@ -55,10 +55,9 @@
     const successPopup = document.querySelector('.success');
     const failPopup = document.querySelector('.fail');
     let timer;
-    let token = localStorage.getItem('accessToken') || '';
+    
     let headers = {
-      "Content-Type": "application/json",
-      "authorization": `Bearer ${token}`
+      "Content-Type": "application/json"
     };
 
     function handleSelectionChange(event, id, task) {
@@ -78,7 +77,18 @@
               timer = setTimeout(() => {
                 window.location.reload();
               }, 2000)
-            } 
+            } else {
+              failPopup.classList.remove('hidden');
+              timer = setTimeout(() => {
+                failPopup.classList.add('hidden');
+              }, 3000)
+            }
+
+            if (data?.errorCode == '401' || data?.errorCode == '403') {
+              timer = setTimeout(() => {
+                window.location.href = '/sign-in';
+              }, 3000)
+            }
           })
           .catch((err) => console.log(err))
       }
@@ -104,19 +114,32 @@
             failPopup.classList.add('hidden');
           }, 3000)
         }
+
+        if (data?.errorCode == '401' || data?.errorCode == '403') {
+          timer = setTimeout(() => {
+            window.location.href = '/sign-in';
+          }, 3000)
+        }
       }).catch((err) => console.log(err))
     }
 
     function signOut() {
-      console.log('signOut');
-      localStorage.removeItem('accessToken');
+          console.log('signOut');
+          loading.classList.remove('hidden');
 
-      fetch("/sign-out/", { method: 'POST' })
-      .then(res => res.json())
-      .then((data) => {
-        console.log(data);
-      }).catch((err) => console.log(err))
-    }
+          fetch("/sign-out", { method: 'GET', headers })
+          .then(res => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data?.success) {
+                successPopup.classList.remove('hidden');
+
+                timer = setTimeout(() => {
+                  window.location.href = '/sign-in';
+                }, 2000)
+              }
+          }).catch((err) => console.log(err))
+        }
   </script>
 </body>
 

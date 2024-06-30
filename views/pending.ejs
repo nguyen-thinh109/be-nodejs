@@ -16,9 +16,7 @@
     <main>
       <div class="relative mb-4">
         <h1 class="text-center text-xl font-bold">List</h1>
-        <a href="/sign-in">
-          <div class="absolute top-0 right-0 transform translate-middle w-6 h-6 grid place-items-center" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
-        </a>
+        <div class="absolute top-0 right-0 transform translate-middle w-6 h-6 grid place-items-center" onclick="signOut()"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
       </div>
 
       <h2 class="mb-4 text-lg font-semibold underline">Pending</h2>
@@ -85,10 +83,8 @@
         const accessToken = localStorage.getItem('accessToken');
         let currentEditingTaskId = '';
         let timer;
-        let token = localStorage.getItem('accessToken') || '';
         let headers = { 
-          "Content-Type": "application/json", 
-          "authorization": `Bearer ${token}`
+          "Content-Type": "application/json"
         };
 
         function handleSelectionChange(event, id, task) {
@@ -98,7 +94,7 @@
             if (event.target.checked) {
               loading.classList.remove('hidden');
 
-              fetch('/completed', { method: 'POST', body: requestBody, headers: { "Content-Type": "application/json" } })
+              fetch('/completed', { method: 'POST', body: requestBody, headers })
               .then(res => res.json())
               .then((data) => {
                   console.log('handleChange', data);
@@ -145,10 +141,15 @@
                     }, 2000)
                   } else {
                     failPopup.classList.remove('hidden');
-
                     timer = setTimeout(() => {
                       failPopup.classList.add('hidden');
                     }, 3000)
+                  }
+
+                  if (data?.errorCode == '401' || data?.errorCode == '403') {
+                    timer = setTimeout(() => {
+                      window.location.href = '/sign-in';
+                    }, 2500)
                   }
               })
               .catch((err) => console.log(err))
@@ -182,6 +183,18 @@
                 timer = setTimeout(() => {
                   window.location.reload();
                 }, 1500)
+              } else {
+                failPopup.classList.remove('hidden');
+                
+                timer = setTimeout(() => {
+                  failPopup.classList.add('hidden');
+                }, 3000)
+              }
+
+              if (data?.errorCode == '401' || data?.errorCode == '403') {
+                timer = setTimeout(() => {
+                  window.location.href = '/sign-in';
+                }, 3000)
               }
             })
             .catch((err) => console.log(err))
@@ -213,18 +226,34 @@
                   failPopup.classList.add('hidden');
                 }, 3000)
               }
+
+              if (data?.errorCode == '401' || data?.errorCode == '403') {
+                timer = setTimeout(() => {
+                  window.location.href = '/sign-in';
+                }, 3000)
+              }
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+              
+              console.log(err);
+            })
         }
 
         function signOut() {
           console.log('signOut');
-          localStorage.removeItem('accessToken');
+          loading.classList.remove('hidden');
 
-          fetch("/sign-out/", { method: 'POST' })
+          fetch("/sign-out", { method: 'POST', headers })
           .then(res => res.json())
           .then((data) => {
             console.log(data);
+            if (data?.success) {
+                successPopup.classList.remove('hidden');
+
+                timer = setTimeout(() => {
+                  window.location.href = '/sign-in';
+                }, 2000)
+              }
           }).catch((err) => console.log(err))
         }
     </script>
