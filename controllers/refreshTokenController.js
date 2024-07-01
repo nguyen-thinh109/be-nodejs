@@ -32,7 +32,7 @@ const handleRefreshToken = (req, res, next) => {
             const accessToken = jwt.sign(
                 { "username": foundUser.username },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '10s' }
+                { expiresIn: '30s' }
             );
 
             res.cookie('token', accessToken);
