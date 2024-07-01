@@ -47,7 +47,7 @@ const signIn = async (req, res) => {
     const accessToken = jwt.sign(
       { "username": foundUser.username },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '15s' }
+      { expiresIn: '10s' }
     );
 
     const refreshToken = jwt.sign(
@@ -65,7 +65,7 @@ const signIn = async (req, res) => {
         JSON.stringify(usersDB.users)
     );
     res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-    res.cookie('token', accessToken)
+    res.cookie('token', accessToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 })
     return res.status(200).json({success: true});
   } else {
     return res.status(404).json({message: 'User not found!'});

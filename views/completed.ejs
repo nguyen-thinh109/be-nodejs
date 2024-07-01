@@ -81,13 +81,13 @@
               failPopup.classList.remove('hidden');
               timer = setTimeout(() => {
                 failPopup.classList.add('hidden');
-              }, 3000)
+              }, 2500)
             }
 
             if (data?.errorCode == '401' || data?.errorCode == '403') {
               timer = setTimeout(() => {
                 window.location.href = '/sign-in';
-              }, 3000)
+              }, 2500)
             }
           })
           .catch((err) => console.log(err))
@@ -112,13 +112,13 @@
           failPopup.classList.remove('hidden');
           timer = setTimeout(() => {
             failPopup.classList.add('hidden');
-          }, 3000)
+          }, 2500)
         }
 
         if (data?.errorCode == '401' || data?.errorCode == '403') {
           timer = setTimeout(() => {
             window.location.href = '/sign-in';
-          }, 3000)
+          }, 2500)
         }
       }).catch((err) => console.log(err))
     }

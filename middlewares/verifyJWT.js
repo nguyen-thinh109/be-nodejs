@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const refreshTokenController = require('../controllers/refreshTokenController')
 require('dotenv').config();
 
 const verifyJWT = (req, res, next) => {
@@ -6,10 +7,10 @@ const verifyJWT = (req, res, next) => {
     const token = req.cookies?.token;
 
     console.log('currentPath', currentPath);
-    console.log('token', token);
+    // console.log('token', token);
 
     if (!token) {
-        res.redirect('sign-in');
+        return res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
     }
 
     if (token) {
@@ -17,8 +18,13 @@ const verifyJWT = (req, res, next) => {
             token,
             process.env.ACCESS_TOKEN_SECRET,
             (err, decoded) => {
-                if (err) {
-                    return res.status(403).redirect('/unauthorized'); //invalid token  
+                if (err?.message === 'jwt expired') {
+                    console.log('TokenExpiredError: jwt expired')
+                    return refreshTokenController.handleRefreshToken(req, res, next)
+                }
+                
+                if (err && err?.message !== 'jwt expired') {
+                    return res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' }); //invalid token  
                 }
 
                 req.user = decoded.username;
