@@ -89,8 +89,9 @@ const signUp = async (req, res) => {
   }
 
   //Check duplicate email
-  let isEmailDulpicated = usersDB.users.find(user => user?.email === email)
-  if (isEmailDulpicated) {
+  let isEmailDuplicated = usersDB.users.find(user => user?.email === email)
+  
+  if (isEmailDuplicated) {
     return res.status(400).json({message: 'Email existed!'})
   }
 

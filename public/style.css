@@ -943,3 +943,7 @@ body {
 input {
   color: black;
 }
+
+.bg-red{
+  background-color: #ef4444;
+}

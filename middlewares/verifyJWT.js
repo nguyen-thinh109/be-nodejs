@@ -10,7 +10,8 @@ const verifyJWT = (req, res, next) => {
     // console.log('token', token);
 
     if (!token) {
-        return res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
+        // return res.status(401).send({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
+        res.status(401).render('unauthorized')
     }
 
     if (token) {

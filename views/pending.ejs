@@ -53,6 +53,7 @@
     <!-- Result pop-up -->
     <%- include('./comp/success-popup') %>
     <%- include('./comp/fail-popup') %>
+    <%- include('./comp/session-popup') %>
 
     <!-- Add/Edit task pop-up -->
     <div id="pop-up" class="p-4 h-full w-full absolute z-30 top-0 left-0 bg-nordic hidden">
@@ -80,7 +81,7 @@
         const addTaskBtn = document.querySelector('#add-btn');
         const editTaskBtn = document.querySelector('#edit-btn');
         const titlePopup = document.querySelector('.title-taskPopup');
-        const accessToken = localStorage.getItem('accessToken');
+        const sessionPopup = document.querySelector('#session');
         let currentEditingTaskId = '';
         let timer;
         let headers = { 
@@ -147,9 +148,7 @@
                   }
 
                   if (data?.errorCode == '401' || data?.errorCode == '403') {
-                    timer = setTimeout(() => {
-                      window.location.href = '/sign-in';
-                    }, 2500)
+                    sessionPopup.classList.remove('hidden');
                   }
               })
               .catch((err) => console.log(err))
@@ -183,6 +182,8 @@
                 timer = setTimeout(() => {
                   window.location.reload();
                 }, 1500)
+              } else if (data?.errorCode == '401' || data?.errorCode == '403') {
+                sessionPopup.classList.remove('hidden');
               } else {
                 failPopup.classList.remove('hidden');
                 
@@ -191,11 +192,7 @@
                 }, 2500)
               }
 
-              if (data?.errorCode == '401' || data?.errorCode == '403') {
-                timer = setTimeout(() => {
-                  window.location.href = '/sign-in';
-                }, 2500)
-              }
+              
             })
             .catch((err) => console.log(err))
         }
@@ -219,19 +216,19 @@
                 timer = setTimeout(() => {
                   window.location.reload();
                 }, 1500)
-              } else {
+              } 
+              
+              if (data?.errorCode === '401' || data?.errorCode === '403') {
+                loading.classList.add('hidden');
+                sessionPopup.classList.remove('hidden');
+              } 
+              
                 failPopup.classList.remove('hidden');
                 
                 timer = setTimeout(() => {
                   failPopup.classList.add('hidden');
                 }, 2500)
-              }
-
-              if (data?.errorCode == '401' || data?.errorCode == '403') {
-                timer = setTimeout(() => {
-                  window.location.href = '/sign-in';
-                }, 2500)
-              }
+                           
             })
             .catch((err) => {
               
@@ -249,12 +246,15 @@
             console.log(data);
             if (data?.success) {
                 successPopup.classList.remove('hidden');
-
                 timer = setTimeout(() => {
                   window.location.href = '/sign-in';
                 }, 2000)
               }
           }).catch((err) => console.log(err))
+        }
+
+        function redirectToSignIn() {
+          window.location.href = '/sign-in';
         }
     </script>
   </body>

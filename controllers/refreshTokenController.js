@@ -35,7 +35,7 @@ const handleRefreshToken = (req, res, next) => {
                 { expiresIn: '30s' }
             );
 
-            res.cookie('token', accessToken);
+            res.cookie('token', accessToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
             next();
         }
     );
