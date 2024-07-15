@@ -85,7 +85,8 @@
         let currentEditingTaskId = '';
         let timer;
         let headers = { 
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem('accessToken') ?? ''
         };
 
         function handleSelectionChange(event, id, task) {
@@ -139,6 +140,7 @@
 
                     timer = setTimeout(() => {
                       window.location.reload();
+                      addTaskInput.value = ""
                     }, 2000)
                   } else {
                     failPopup.classList.remove('hidden');
@@ -181,6 +183,7 @@
 
                 timer = setTimeout(() => {
                   window.location.reload();
+                  editTaskInput.value = ' ';
                 }, 1500)
               } else if (data?.errorCode == '401' || data?.errorCode == '403') {
                 sessionPopup.classList.remove('hidden');
@@ -216,18 +219,22 @@
                 timer = setTimeout(() => {
                   window.location.reload();
                 }, 1500)
+
+                return;
               } 
               
               if (data?.errorCode === '401' || data?.errorCode === '403') {
                 loading.classList.add('hidden');
                 sessionPopup.classList.remove('hidden');
+
+                return;
               } 
               
-                failPopup.classList.remove('hidden');
+              failPopup.classList.remove('hidden');
                 
-                timer = setTimeout(() => {
-                  failPopup.classList.add('hidden');
-                }, 2500)
+              timer = setTimeout(() => {
+                failPopup.classList.add('hidden');
+              }, 2500)
                            
             })
             .catch((err) => {

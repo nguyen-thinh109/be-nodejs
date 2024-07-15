@@ -56,6 +56,8 @@ const signIn = async (req, res) => {
     await fsPromises.writeFile(path.join(__dirname, "..", "models", "users.json"), JSON.stringify(usersDB.users));
     res.cookie("jwt", refreshToken, { httpOnly: true, sameSite: "None", secure: true, maxAge: 24 * 60 * 60 * 1000 });
     res.cookie("token", accessToken, { httpOnly: true, sameSite: "None", secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    // res.setHeader('Authorization', `Bearer ${accessToken}`);
+    res.set('Authorization', `Bearer ${accessToken}`);
     
     return res.status(200).json({
       success: true,
@@ -116,10 +118,3 @@ module.exports = {
   signUp,
   showSignUpPage,
 };
-
-// HttpStatusCode {
-//   OK = 200,
-//   BAD_REQUEST = 400,
-//   NOT_FOUND = 404,
-//   INTERNAL_SERVER = 500,
-//  }

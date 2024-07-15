@@ -4,10 +4,11 @@ require('dotenv').config();
 
 const verifyJWT = (req, res, next) => {
     const currentPath = req.originalUrl;
-    const token = req.cookies?.token;
+    const token = req.headers?.authorization?.split(" ")[1] || req.cookies?.token;
+
+    console.log("Authorization", req.headers?.authorization);
 
     console.log('currentPath', currentPath);
-    // console.log('token', token);
 
     if (!token) {
         // return res.status(401).send({ errorCode: '401', message: 'Session expired. Please sign-in again!' });

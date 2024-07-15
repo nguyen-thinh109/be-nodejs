@@ -57,10 +57,10 @@
     const failPopup = document.querySelector('.fail');
     const sessionPopup = document.querySelector('#session');
     let timer;
-    
-    let headers = {
-      "Content-Type": "application/json"
-    };
+    let headers = { 
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem('accessToken') ?? ''
+        };
 
     function handleSelectionChange(event, id, task) {
       console.log('unselected', event.target.checked, id, task)

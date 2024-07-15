@@ -92,7 +92,7 @@ const updateOnePendingTask = async (req, res) => {
 
 const showCompletedTasks = (req, res) => {
   res.render("completed", { tasks: completeDB.completes });
-  console.log('showCompletedTasks', completeDB.completes);
+  // console.log('showCompletedTasks', completeDB.completes);
 };
 
 const addCompletedTasks = async (req, res) => {
