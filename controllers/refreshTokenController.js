@@ -11,15 +11,13 @@ const handleRefreshToken = (req, res, next) => {
     const refreshToken = req.cookies?.jwt;
 
     if (!refreshToken) {
-        return res.status(401).render('unauthorized')
-        //res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
+        return res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
     }
 
     const foundUser = usersDB.users.find(user => user.refreshToken === refreshToken);
 
     if (!foundUser) {
-        return res.status(401).render('unauthorized')
-        //res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
+        return res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' });
     }
 
     jwt.verify(
@@ -28,8 +26,7 @@ const handleRefreshToken = (req, res, next) => {
         (err, decoded) => {
             console.log('handleRefreshToken', err)
             if (err || decoded?.username !== foundUser.username) {
-                return res.status(401).render('unauthorized')
-                //res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' }); //invalid token  ; //invalid token  
+                return res.status(401).json({ errorCode: '401', message: 'Session expired. Please sign-in again!' }); //invalid token  ; //invalid token  
             }
 
             const accessToken = jwt.sign(
